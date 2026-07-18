@@ -1,0 +1,33 @@
+{
+  "_comment": "Gouden standaard: bekende input -> verwachte GECANONICALISEERDE payload. _token wordt door de canonicalisatie-pass gestript en staat dus niet in expect. Waarden zijn EXACT (pin business-kritische velden -> vangt semantische drift).",
+  "cases": [
+    {
+      "name": "NL->US standaard",
+      "input": {
+        "shipper":   { "country": "NL", "postcode": "1011AB", "street": "Damrak 1" },
+        "recipient": { "country": "US", "postcode": "10001",  "street": "5th Ave" },
+        "package":   { "weightKg": 2.5 },
+        "session":   { "token": "abc123-volatile" }
+      },
+      "expect": {
+        "verzender_land": "NL", "verzender_postcode": "1011AB", "verzender_straat": "Damrak 1",
+        "ontvanger_land": "USA", "ontvanger_postcode": "10001", "ontvanger_straat": "5th Ave",
+        "gewicht": 2500
+      }
+    },
+    {
+      "name": "NL->HK (geen-postcode + landmap)",
+      "input": {
+        "shipper":   { "country": "NL", "postcode": "1011AB", "street": "Damrak 1" },
+        "recipient": { "country": "HK", "postcode": "0000",   "street": "Nathan Rd" },
+        "package":   { "weightKg": 0.4 },
+        "session":   { "token": "zzz-volatile" }
+      },
+      "expect": {
+        "verzender_land": "NL", "verzender_postcode": "1011AB", "verzender_straat": "Damrak 1",
+        "ontvanger_land": "HK", "ontvanger_postcode": "geen", "ontvanger_straat": "Nathan Rd",
+        "gewicht": 400
+      }
+    }
+  ]
+}

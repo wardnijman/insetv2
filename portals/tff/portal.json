@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "portal": "tff",
+  "baseUrl": "https://tff.example",
+  "auth": { "adapter": "laravelSession" },
+  "capabilities": { "sandboxBooking": "never" }
+}

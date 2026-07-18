@@ -1,0 +1,33 @@
+# === Secrets — NOOIT in git (les uit v1, zie docs/v2-onderzoeksdossier.md §8) ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+**/config.local.*
+credentials.json
+
+# === Gegenereerde artefacten — buiten git, generatie is een build-stap (R2.5) ===
+generated/
+**/__generated__/
+dist/
+build/
+.svelte-kit/
+
+# === Dependencies & caches ===
+node_modules/
+.pnpm-store/
+.cache/
+*.tsbuildinfo
+
+# === Discovery-werkbestanden (HAR/DOM/screenshots) — geen klantdata in git ===
+recordings/
+*.har
+discovery-runs/
+
+# === OS / editor ===
+.DS_Store
+*.log
+.vscode/
+.idea/

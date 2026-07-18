@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "flow": "getRates",
+  "fingerprint": "B_getRates_0",
+  "canonicalize": { "dropFields": ["_token"] },
+  "map": {
+    "verzender_land":      { "from": "shipper.country",    "transform": "isoToTffCountry" },
+    "verzender_postcode":  { "from": "shipper.postcode",   "transform": "postcodeOrGeen", "args": ["shipper.country"] },
+    "verzender_straat":    { "from": "shipper.street",     "transform": "dashIfEmpty" },
+    "ontvanger_land":      { "from": "recipient.country",  "transform": "isoToTffCountry" },
+    "ontvanger_postcode":  { "from": "recipient.postcode", "transform": "postcodeOrGeen", "args": ["recipient.country"] },
+    "ontvanger_straat":    { "from": "recipient.street",   "transform": "dashIfEmpty" },
+    "gewicht":             { "from": "package.weightKg",   "transform": "kgToGrams" },
+    "_token":              { "from": "session.token",      "transform": "identity" }
+  }
+}
