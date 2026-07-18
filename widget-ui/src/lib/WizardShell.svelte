@@ -14,10 +14,14 @@
     import { m } from "./state/messageStore";
     import ShipWizardProgress from "./components/ShipWizardProgress.svelte";
     import SenderStepBlock from "./components/SenderStepBlock.svelte";
+    import ReceiverStepBlock from "./components/ReceiverStepBlock.svelte";
+    import ToastDisplay from "./components/toast/ToastDisplay.svelte";
     import { onMount } from "svelte";
 
     export let tenant: TenantConfig;
     export let provider: WidgetProviderLayer;
+    /** Interim: v2-tenancy koppelt dit aan het boekaccount; dev-harness geeft tenant.id door. */
+    export let userId: string = "";
 
     const emptyAddress = () => ({
         company: "",
@@ -108,11 +112,9 @@
         {#if done}
             <div class="placeholder">Klaar — alle stappen doorlopen.</div>
         {:else if currentStep?.id === "sender"}
-            <SenderStepBlock
-                {provider}
-                apiBaseUrl={tenant.host.endpoints.api}
-                {shipment}
-            />
+            <SenderStepBlock {provider} {shipment} />
+        {:else if currentStep?.id === "receiver"}
+            <ReceiverStepBlock {provider} {shipment} {userId} />
         {:else if currentStep}
             <!-- Volgende slices: Receiver/PackageTable/Product/Ship step-blocks porten. -->
             <div class="placeholder">
@@ -136,6 +138,8 @@
         </div>
     {/if}
 </div>
+
+<ToastDisplay />
 
 <style>
     /* Svelte-scoped, net als v1: de widget draait in host-pagina's waar generieke

@@ -12,8 +12,10 @@ import { resolveHost, resolveMount } from "../../src/widget/host-adapter.ts";
 import type { HostEnv, HostElement } from "../../src/widget/host-adapter.ts";
 import { getWidgetProvider } from "./lib/providers/registry";
 import { setLang } from "./lib/state/messageStore";
+import { setApiBaseUrl } from "./lib/api/global";
 
 const tenant = devTenant as unknown as TenantConfig;
+setApiBaseUrl(tenant.host.endpoints.api);
 
 // De echte DOM achter de HostEnv-abstractie — dezelfde adapter-interface die de
 // node-harness met een mock-DOM test (verify-host).
@@ -30,4 +32,4 @@ setLang("NL");
 const target = resolveMount(resolveHost(tenant), env) as unknown as HTMLElement;
 const provider = getWidgetProvider(tenant.providers[0]);
 
-mount(WizardShell, { target, props: { tenant, provider } });
+mount(WizardShell, { target, props: { tenant, provider, userId: tenant.id } });

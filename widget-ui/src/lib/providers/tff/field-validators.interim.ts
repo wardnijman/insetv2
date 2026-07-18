@@ -26,8 +26,31 @@ function field(path: string, check: (v: unknown, t?: any) => ValidationResult): 
   };
 }
 
+// Aggregaat (v1: validateShipperAddress/validateRecipientAddress uit de generated
+// laag) — gebruikt door PasteAddressBox na een paste-parse; eerste falende check wint.
+function validateAddressAggregate(a: any): ValidationResult {
+  if (!a) return fail("Adres ontbreekt");
+  const checks: Array<[string, boolean]> = [
+    ["Land is verplicht", !!a.country?.trim?.()],
+    ["Straat is verplicht", !!(Array.isArray(a.street) && a.street[0]?.trim())],
+    ["Postcode is verplicht", !!a.postalCode?.trim?.()],
+    ["Plaats is verplicht", !!a.city?.trim?.()],
+    ["Voornaam is verplicht", !!a.firstName?.trim?.()],
+    ["Achternaam is verplicht", !!a.lastName?.trim?.()],
+    ["Telefoonnummer is verplicht", !!a.phoneNumber?.trim?.()],
+  ];
+  for (const [msg, pass] of checks) if (!pass) return fail(msg);
+  const total = (a.firstName ?? "").trim().length + (a.lastName ?? "").trim().length;
+  if (total > NAME_TOTAL_MAX) return fail(`Voor- en achternaam samen max. ${NAME_TOTAL_MAX} tekens`);
+  return ok;
+}
+
 function addressValidators(prefix: "shipperAddress" | "recipientAddress"): Record<string, FieldValidator> {
   return {
+    [prefix]: {
+      dependsOn: (template) => ({ value: template?.[prefix], template }),
+      validate: ({ value }: { value: any }) => validateAddressAggregate(value),
+    },
     [`${prefix}_firstName`]: field(`${prefix}.firstName`, (v, t) => {
       const req = required("Voornaam")(v);
       if (!req.valid) return req;
@@ -61,4 +84,7 @@ function addressValidators(prefix: "shipperAddress" | "recipientAddress"): Recor
 export const interimFieldValidators: Record<string, FieldValidator> = {
   ...addressValidators("shipperAddress"),
   ...addressValidators("recipientAddress"),
+  // Bedrijfsnaam ontvanger: verplicht zodra het veld zichtbaar is (zakelijke ontvanger,
+  // v1-gedrag); bij particulier is het veld unmounted en valt de check weg.
+  recipientAddress_company: field("recipientAddress.company", required("Bedrijfsnaam")),
 };

@@ -2,7 +2,7 @@
     // Geport uit v1 SenderStepBlock.svelte. Wijzigingen (widget-extractie):
     // - fieldValidators + domain komen uit de provider-PARAMETER (WidgetProviderLayer)
     //   i.p.v. de hardcoded generated imports (steps/getRatesValidate, steps/domain.json).
-    // - apiBaseUrl komt uit de tenant host-config i.p.v. api/global.
+    // - apiBaseUrl komt uit api/global, dat bij boot uit de tenant host-config gezet wordt.
     // - InputWithRecall (bedrijfspresets, vergt backend + toast) volgt in een latere
     //   slice; interim een ValidatedInput zodat het veld + validatie er al staan.
     import type { ShipmentTemplate } from "../types/config";
@@ -16,10 +16,10 @@
     import type { Writable } from "svelte/store";
     import { writable } from "svelte/store";
     import { currentLang, m } from "../state/messageStore";
+    import { apiBaseUrl } from "../api/global";
     import StepSection from "./wizard/StepSection.svelte";
 
     export let provider: WidgetProviderLayer;
-    export let apiBaseUrl: string;
     export let shipment: Writable<ShipmentTemplate>;
 
     const countryOptions = getCountryOptions(

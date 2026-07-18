@@ -4,11 +4,14 @@
 // en de engine kiest de sender-stap als eerste render. Draait in CI (widget-ui job).
 
 import { render } from "svelte/server";
+import { writable } from "svelte/store";
 import WizardShell from "./lib/WizardShell.svelte";
+import ReceiverStepBlock from "./lib/components/ReceiverStepBlock.svelte";
 import { setLang } from "./lib/state/messageStore";
 import { getWidgetProvider } from "./lib/providers/registry";
 import devTenant from "../../tenants/dev-standalone.json";
 import type { TenantConfig } from "../../src/widget/tenant.ts";
+import type { ShipmentTemplate } from "./lib/types/config";
 
 setLang("NL");
 const tenant = devTenant as unknown as TenantConfig;
@@ -28,6 +31,24 @@ check('landenlijst uit de provider-laag (Intl: "Nederland")', body.includes("Ned
 check('footer uit de catalogus ("Verder"/"Vorige")', body.includes("Verder") && body.includes("Vorige"));
 check('progress toont douanestap NIET (EU-default-route)', !body.includes("Douanegegevens"));
 check("branding uit tenant-config", body.includes("Inset dev"));
+
+// Receiver-stap los renderen (de shell start op sender): NL-modus, type-toggle, adresboek.
+const emptyAddress = () => ({
+  company: "", firstName: "", lastName: "", email: "", phoneNumber: "",
+  street: ["", ""], postalCode: "", city: "", country: "", region: "",
+});
+const recShipment = writable({
+  shipperAddress: { ...emptyAddress(), country: "NL" },
+  recipientAddress: { ...emptyAddress(), country: "NL" },
+  packages: [],
+  products: [],
+} as unknown as ShipmentTemplate);
+const rec = render(ReceiverStepBlock, {
+  props: { shipment: recShipment, provider, userId: "smoke" },
+});
+check('receiver: NL-modus toont postcode+huisnummer-rij ("Huisnummer")', rec.body.includes("Huisnummer"));
+check('receiver: type-toggle ("Bedrijf"/"Particulier")', rec.body.includes("Bedrijf") && rec.body.includes("Particulier"));
+check('receiver: adresboek + paste-vak', rec.body.includes("Adresboek") && rec.body.includes("Plak hier"));
 
 if (fail) {
   console.error(`SSR-smoke FAALT (${fail})`);
