@@ -8,6 +8,7 @@ secrets/
 **/config.local.*
 credentials.json
 .vault/
+.traces/
 
 # === Gegenereerde artefacten — buiten git, generatie is een build-stap (R2.5) ===
 generated/

@@ -4,6 +4,7 @@
 
 import { SessionPool } from "./pool.ts";
 import type { PortalAuthAdapter } from "./adapter.ts";
+import { startRun, record, finishRun } from "../observability/trace.ts";
 
 type TransformFn = (input: unknown) => Record<string, unknown>;
 
@@ -25,7 +26,16 @@ export async function runFlow(
 ): Promise<unknown> {
   const transform = await loadTransform(portal, flow);
   const payload = transform(input);
-  const resp = await pool.submit(flow, payload);
-  if (resp.status !== 200) throw new Error(`flow ${flow} faalde: status ${resp.status}`);
-  return resp.body;
+  const ctx = startRun(portal, flow);
+  record(ctx, "payload", payload);
+  try {
+    const resp = await pool.submit(flow, payload);
+    record(ctx, "response", { status: resp.status });
+    if (resp.status !== 200) throw new Error(`flow ${flow} faalde: status ${resp.status}`);
+    finishRun(ctx, { status: "ok" });
+    return resp.body;
+  } catch (e) {
+    finishRun(ctx, { status: "error", error: (e as Error).message });
+    throw e;
+  }
 }
