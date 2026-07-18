@@ -5,7 +5,7 @@
   "host": {
     "mode": "standalone",
     "containerId": "inset-widget",
-    "endpoints": { "api": "http://localhost:5199" }
+    "endpoints": { "api": "http://localhost:5199/t/dev-standalone" }
   },
   "branding": { "name": "Inset dev" },
   "defaults": { "originCountry": "NL" }

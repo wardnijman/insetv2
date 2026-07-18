@@ -16,6 +16,7 @@
     import SenderStepBlock from "./components/SenderStepBlock.svelte";
     import ReceiverStepBlock from "./components/ReceiverStepBlock.svelte";
     import PackageTableStepBlock from "./components/PackageTableStepBlock.svelte";
+    import ShipRatesInterim from "./components/ShipRatesInterim.svelte";
     import ToastDisplay from "./components/toast/ToastDisplay.svelte";
     import { onMount } from "svelte";
 
@@ -118,6 +119,8 @@
             <ReceiverStepBlock {provider} {shipment} {userId} />
         {:else if currentStep?.id === "packages"}
             <PackageTableStepBlock order={null} {provider} {shipment} {userId} />
+        {:else if currentStep?.id === "ship"}
+            <ShipRatesInterim {shipment} />
         {:else if currentStep}
             <!-- Volgende slices: Receiver/PackageTable/Product/Ship step-blocks porten. -->
             <div class="placeholder">

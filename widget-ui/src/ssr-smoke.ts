@@ -58,6 +58,11 @@ const pkg = render(PackageTableStepBlock, {
 check('packages: sectie + tabelkop ("Verpakkingen", "Afmetingen")', pkg.body.includes("Verpakkingen") && pkg.body.includes("Afmetingen"));
 check('packages: regel-toevoegen-actie', pkg.body.includes("Regel toevoegen"));
 
+// Interim verzendstap (rates via proxy; onMount-fetch draait niet in SSR → laadstaat).
+const shipMod = await import("./lib/components/ShipRatesInterim.svelte");
+const ship = render(shipMod.default, { props: { shipment: recShipment } });
+check('ship (interim): sectie + laadstaat', ship.body.includes("Verzending") && ship.body.includes("Tarieven ophalen"));
+
 if (fail) {
   console.error(`SSR-smoke FAALT (${fail})`);
   process.exit(1);
