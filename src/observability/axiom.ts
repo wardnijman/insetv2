@@ -2,9 +2,9 @@
 // Best-effort en fail-stil — observability mag de flow nooit blokkeren. Token uit env
 // (AXIOM_API_TOKEN), nooit in de repo. Backend inwisselbaar: alleen dit bestand verandert.
 
-// Regio-specifiek endpoint (Wards account = EU). Override via AXIOM_URL indien nodig.
-const BASE = process.env.AXIOM_URL ?? "https://api.eu.axiom.co";
-const INGEST = `${BASE}/v1/datasets`;
+// Regionaal edge-endpoint (Wards account = EU, eu-central-1). Ingest gaat via de edge-host
+// + pad /v1/ingest/<dataset> (niet api.axiom.co/v1/datasets/…). Override via AXIOM_URL.
+const BASE = process.env.AXIOM_URL ?? "https://eu-central-1.aws.edge.axiom.co";
 
 export function axiomEnabled(): boolean {
   return !!process.env.AXIOM_API_TOKEN;
@@ -15,7 +15,7 @@ export async function shipToAxiom(records: unknown[]): Promise<{ ok: boolean; st
   const dataset = process.env.AXIOM_DATASET ?? "inset-traces";
   if (!token) return { ok: false, error: "geen AXIOM_API_TOKEN" };
   try {
-    const res = await fetch(`${INGEST}/${dataset}/ingest`, {
+    const res = await fetch(`${BASE}/v1/ingest/${dataset}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify(records.map((r) => ({ _time: new Date().toISOString(), ...(r as object) }))),
