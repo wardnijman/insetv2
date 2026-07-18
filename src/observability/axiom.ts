@@ -2,7 +2,9 @@
 // Best-effort en fail-stil — observability mag de flow nooit blokkeren. Token uit env
 // (AXIOM_API_TOKEN), nooit in de repo. Backend inwisselbaar: alleen dit bestand verandert.
 
-const INGEST = "https://api.axiom.co/v1/datasets";
+// Regio-specifiek endpoint (Wards account = EU). Override via AXIOM_URL indien nodig.
+const BASE = process.env.AXIOM_URL ?? "https://api.eu.axiom.co";
+const INGEST = `${BASE}/v1/datasets`;
 
 export function axiomEnabled(): boolean {
   return !!process.env.AXIOM_API_TOKEN;
