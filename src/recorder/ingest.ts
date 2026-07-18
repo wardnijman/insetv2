@@ -7,27 +7,16 @@
 // Gebruik: node --experimental-strip-types src/recorder/ingest.ts <capture.json>
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { hashConfig } from "../fabriek/helpers.ts";
+import { classify, fingerprintOf } from "../shared/fingerprint.ts";
 
 const capturePath = process.argv[2] ?? "portals/tff/captures/getRates.capture-1.json";
 const cap = JSON.parse(readFileSync(capturePath, "utf8"));
 
 const fields: Record<string, unknown> = cap.request?.fields ?? {};
-const names = Object.keys(fields);
 
-// Heuristiek: welke velden zijn volatiel (CSRF-tokens, honeypots, timestamps)? Die
-// worden uit de fingerprint genormaliseerd (canonicalisatie-pass, diepte §A.4).
-const VOLATILE_NAME = /(^_?token$|csrf|xsrf|nonce|timestamp|_ts$|sessi|honeypot|^hp_|^website$|^ks$)/i;
-function looksRandom(v: unknown): boolean {
-  const s = String(v ?? "");
-  return s.length >= 16 && /^[A-Za-z0-9_-]+$/.test(s) && /[0-9]/.test(s) && /[A-Za-z]/.test(s);
-}
-const volatile = names.filter((n) => VOLATILE_NAME.test(n) || looksRandom(fields[n]));
-const stable = names.filter((n) => !volatile.includes(n)).sort();
-
-// Fingerprint = hash van het STABIELE veld-stel. Volatiele velden zitten er bewust
-// niet in, zodat dezelfde form met een ander token dezelfde fingerprint geeft.
-const fingerprint = hashConfig(stable);
+// Dezelfde fingerprint-logica als de drift-probe (gedeeld, R1.6).
+const { stable, volatile } = classify(fields);
+const fingerprint = fingerprintOf(stable);
 
 // Draft fields-config: stabiele velden met from/transform = TODO (Claude vult in),
 // volatiele velden landen in canonicalize.dropFields.
