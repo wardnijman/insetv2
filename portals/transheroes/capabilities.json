@@ -1,0 +1,7 @@
+{
+  "booking": {
+    "mode": "deletable",
+    "deletionVerified": false,
+    "note": "Ward 2026-07-18: alleen boeken als we shipments kunnen verwijderen. Verwijderen nog NIET geverifieerd -> boeken geblokkeerd tot deletionVerified=true (na de delete-verkenning)."
+  }
+}

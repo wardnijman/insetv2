@@ -1,0 +1,8 @@
+{
+  "booking": {
+    "mode": "live",
+    "blockCarriers": ["Mainfreight", "MFN"],
+    "blockServicePatterns": ["express", "priority", "saver", "9:00", "10:30", "12:00"],
+    "note": "Ward 2026-07-18: TFF live boeken toegestaan, MAAR nooit Mainfreight (foutvracht — pickup niet uit te zetten, zie project_tff_mainfreight_pickups) en geen express-services. Veilige testkeuze: DPD Classic."
+  }
+}

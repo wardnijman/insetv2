@@ -8,6 +8,7 @@
     "compile": "node --experimental-strip-types src/fabriek/compile.ts",
     "contract-test": "node --experimental-strip-types src/contract/contract-test.ts",
     "drift-probe": "node --experimental-strip-types src/probe/drift-probe.ts",
+    "verify-capabilities": "node --experimental-strip-types src/runtime/verify-capabilities.ts",
     "demo": "node --experimental-strip-types src/runtime/run-demo.ts"
   }
 }
