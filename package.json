@@ -9,7 +9,8 @@
     "contract-test": "node --experimental-strip-types src/contract/contract-test.ts",
     "drift-probe": "node --experimental-strip-types src/probe/drift-probe.ts",
     "verify-capabilities": "node --experimental-strip-types src/runtime/verify-capabilities.ts",
+    "verify-vault": "node --experimental-strip-types src/vault/verify-vault.ts",
     "demo": "node --experimental-strip-types src/runtime/run-demo.ts",
-    "test": "node --experimental-strip-types src/fabriek/compile.ts tff && node --experimental-strip-types src/fabriek/compile.ts transheroes && node --experimental-strip-types src/contract/contract-test.ts && node --experimental-strip-types src/fabriek/verify-generalized.ts && node --experimental-strip-types src/runtime/verify-capabilities.ts && node --experimental-strip-types src/runtime/run-demo.ts && node --experimental-strip-types src/probe/drift-probe.ts"
+    "test": "node --experimental-strip-types src/fabriek/compile.ts tff && node --experimental-strip-types src/fabriek/compile.ts transheroes && node --experimental-strip-types src/contract/contract-test.ts && node --experimental-strip-types src/fabriek/verify-generalized.ts && node --experimental-strip-types src/runtime/verify-capabilities.ts && node --experimental-strip-types src/vault/verify-vault.ts && node --experimental-strip-types src/runtime/run-demo.ts && node --experimental-strip-types src/probe/drift-probe.ts"
   }
 }
