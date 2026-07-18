@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  offline-harness:
+    # Draait de complete OFFLINE harnas op elke push/PR: compile -> contract-test
+    # (semantische drift) -> generalisatie (compiler==oracle) -> capability-guard ->
+    # runtime (pool+token-lifecycle) -> drift-probe (schoon). Geen live portaal-calls,
+    # geen secrets: die vereisen creds + het gebonden IP en draaien apart (wekelijkse
+    # live drift-probe, R1.2).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline harnas (npm test)
+        run: npm test
