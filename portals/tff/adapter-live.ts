@@ -158,7 +158,6 @@ export function transformGetRatesInput(input: any): Record<string, any> {
 // csrfField is a no-op placeholder kept only for contract compatibility.
 export const adapterLive: PortalAuthAdapter & { portal: string } = {
   portal: "tff",
-  csrfField: "_token",
 
   async login(): Promise<Session> {
     const { user, pass } = creds();
@@ -169,8 +168,8 @@ export const adapterLive: PortalAuthAdapter & { portal: string } = {
 
   async submit(session: Session, flow: string, payload: Record<string, unknown>): Promise<PortalResponse> {
     if (flow !== "getRates") throw new Error(`adapter-live only implements getRates (read-only), got: ${flow}`);
-    // Drop the pool-injected csrf placeholder; the wizard ignores it anyway.
-    const { _token, ...fields } = payload as any;
+    // The adapter owns auth (cookie header via session.cookie); the pool injects nothing.
+    const fields = payload as any;
     const r = await fetchRates(globalThis.fetch, session.cookie, fields);
     return {
       status: r.status,

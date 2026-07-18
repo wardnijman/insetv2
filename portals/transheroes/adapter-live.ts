@@ -109,9 +109,6 @@ export function transformGetRatesInput(input: any, transportType = 1): Record<st
 // ---------------------------------------------------------------------------
 export const adapterLive: PortalAuthAdapter = {
   portal: "transheroes",
-  // No per-request CSRF token in the API layer; the Bearer replaces it. Kept as a
-  // placeholder purely for contract compatibility — the pool's injection is inert.
-  csrfField: "_token",
 
   async login(): Promise<ThSession> {
     const { user, pass } = creds();
@@ -127,7 +124,8 @@ export const adapterLive: PortalAuthAdapter = {
 
   async submit(session: Session, flow: string, payload: Record<string, unknown>): Promise<PortalResponse> {
     if (flow !== "getRates") throw new Error(`adapter-live only implements getRates (read-only), got: ${flow}`);
-    const { _token, ...body } = payload as any; // drop the inert pool-injected placeholder
+    // The adapter owns auth (Bearer header via session.cookie); the pool injects nothing.
+    const body = payload as any;
     const authHeader = session.cookie;           // the overloaded Bearer header
     const r = await fetchRateIndication(globalThis.fetch, authHeader, body);
     return { status: r.status, loggedOut: r.loggedOut, body: { result: r.result, reason: r.reason } };
