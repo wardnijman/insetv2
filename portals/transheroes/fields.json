@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "flow": "getRates",
+  "fingerprint": "api:quotation-price-indications:v1",
+
+  "_generalizationNote": "TFF's fields.json maps canonical -> a FLAT dict of form-field keys (verzender_land, gewicht) whose values are strings. A JSON-API needs two things the flat format lacks: (1) NESTED target paths (dotted 'target'), and (2) an ARRAY construct that maps a canonical collection onto a list of objects (quotationLines). The from/transform/args idea itself carried over unchanged; only the target side and the array construct are new.",
+
+  "canonicalize": { "dropFields": ["_token"] },
+
+  "map": {
+    "quotationReference":                 { "const": null },
+    "departureDate":                      { "from": "meta.now",                 "transform": "isoNow" },
+
+    "departureLocation.address.address":  { "from": "shipper.street",           "transform": "joinStreet" },
+    "departureLocation.address.city":     { "from": "shipper.city",             "transform": "identity" },
+    "departureLocation.address.country":  { "from": "shipper.country",          "transform": "isoToCountryId" },
+    "departureLocation.address.postalCode": { "from": "shipper.postcode",       "transform": "identity" },
+
+    "destinationLocation.address.address": { "from": "recipient.street",        "transform": "joinStreet" },
+    "destinationLocation.address.city":   { "from": "recipient.city",           "transform": "identity" },
+    "destinationLocation.address.country": { "from": "recipient.country",       "transform": "isoToCountryId" },
+    "destinationLocation.address.postalCode": { "from": "recipient.postcode",   "transform": "identity" }
+  },
+
+  "arrays": {
+    "quotationLines": {
+      "from": "packages",
+      "item": {
+        "goodsType":     { "from": "type",       "transform": "packageTypeToGoodsTypeId" },
+        "transportType": { "const": 1 },
+        "quantity":      { "const": 1 },
+        "weight":        { "from": "weight",     "transform": "identity" },
+        "length":        { "from": "length",     "transform": "identity" },
+        "width":         { "from": "width",      "transform": "identity" },
+        "height":        { "from": "height",     "transform": "identity" },
+        "loadMeters":    { "from": "*",          "transform": "loadMetersFromLxW" },
+        "stackable":     { "from": "stackable",  "transform": "boolDefaultTrue" }
+      }
+    }
+  },
+
+  "referenceData": {
+    "isoToCountryId": "country-ids.json"
+  }
+}

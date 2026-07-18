@@ -1,0 +1,9 @@
+{
+  "_comment": "ISO alpha-2 -> TransHeroes numeric country id. Reference data fetched read-only from GET api.transportal.transheroes.com/countries (paginated, 6 pages). Slice covers the demo lanes; a real build generates the full 300-country map. Analogous to TFF's land-pcformat.json.",
+  "NL": 121,
+  "DE": 64,
+  "BE": 16,
+  "FR": 59,
+  "GB": 184,
+  "US": 186
+}

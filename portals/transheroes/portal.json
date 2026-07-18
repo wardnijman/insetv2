@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "portal": "transheroes",
+  "baseUrl": "https://api.transportal.transheroes.com",
+  "auth": {
+    "adapter": "laravelPassport",
+    "loginForm": "https://inloggen.transportal.transheroes.com/login",
+    "clientId": "2",
+    "scope": "*",
+    "pkce": "S256",
+    "endpoints": {
+      "authorization": "https://inloggen.transportal.transheroes.com/oauth/authorize",
+      "token": "https://api.transportal.transheroes.com/oauth/token",
+      "userInfo": "https://api.transportal.transheroes.com/oauth/userInfo"
+    },
+    "sessionSecret": "bearer",
+    "tokenTtlSec": 43200,
+    "refreshable": true
+  },
+  "bodyFormat": "json",
+  "backend": "boltrics",
+  "capabilities": { "sandboxBooking": "never", "statelessRateCalc": true }
+}

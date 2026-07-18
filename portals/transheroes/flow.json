@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "flow": "getRates",
+  "endpoint": { "method": "POST", "path": "/quotation-price-indications" },
+  "bodyFormat": "json",
+  "fingerprint": "api:quotation-price-indications:v1",
+  "fingerprintKind": "apiContract",
+  "note": "Fingerprint shifts from TFF's form-markup-hash to an API-contract hash (endpoint + request/response schema + reference-data enum ids). Stateless price calc: persists nothing (verified /quotations stays 0)."
+}
