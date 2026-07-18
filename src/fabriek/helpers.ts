@@ -27,6 +27,18 @@ export function canonicalize(
   return out;
 }
 
+/** Zet een waarde op een genest pad ("departureLocation.address.country"), tussenobjecten aanmakend. */
+export function setPath(obj: Record<string, any>, path: string, value: unknown): void {
+  const parts = path.split(".");
+  let cur: Record<string, any> = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const k = parts[i];
+    if (cur[k] == null || typeof cur[k] !== "object") cur[k] = {};
+    cur = cur[k];
+  }
+  cur[parts[parts.length - 1]] = value;
+}
+
 /** Deterministische, content-addressed hash van een config (compiler is hermetisch). */
 export function hashConfig(obj: unknown): string {
   return createHash("sha256").update(JSON.stringify(obj)).digest("hex").slice(0, 12);

@@ -13,4 +13,10 @@ export const primitives: Record<string, Primitive> = {
   },
   upper: (v) => String(v ?? "").toUpperCase(),
   kgToGrams: (v) => Math.round(Number(v) * 1000),
+  isoNow: (v) => new Date(String(v)).toISOString(),
+  joinStreet: (v) => {
+    const a = (Array.isArray(v) ? v : [v]).map((x) => String(x ?? ""));
+    return `${a[0] ?? ""} ${a[1] ?? ""}`.trim();
+  },
+  boolDefaultTrue: (v) => (v == null ? true : v),
 };
