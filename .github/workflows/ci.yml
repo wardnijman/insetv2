@@ -20,3 +20,26 @@ jobs:
           node-version: '22'
       - name: Offline harnas (npm test)
         run: npm test
+
+  widget-ui:
+    # Widget-UI (geporte v1-componenten op de v2-seams): typecheck + build + SSR-smoke.
+    # Eigen subpackage met eigen lockfile — de repo-root blijft dependency-vrij.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: widget-ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: widget-ui/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Typecheck (svelte-check)
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - name: SSR-smoke (render-verificatie)
+        run: npm run smoke

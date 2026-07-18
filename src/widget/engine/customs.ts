@@ -15,5 +15,9 @@ export function isEUCustoms(country?: string): boolean {
 }
 
 export function needsCustoms(shipment: Shipment): boolean {
-  return !isEUCustoms(shipment.shipperAddress?.country) || !isEUCustoms(shipment.recipientAddress?.country);
+  // Als v1 (wizard/steps.ts): een nog ONBEKEND land telt niet als "buiten EU" —
+  // de douanestap verschijnt pas zodra een ingevuld uiteinde er echt om vraagt.
+  const orig = shipment.shipperAddress?.country;
+  const dest = shipment.recipientAddress?.country;
+  return (!!dest && !isEUCustoms(dest)) || (!!orig && !isEUCustoms(orig));
 }

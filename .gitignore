@@ -15,6 +15,7 @@ credentials.json
 generated/
 **/__generated__/
 dist/
+dist-ssr/
 build/
 .svelte-kit/
 # Recorder-drafts — regenereerbaar uit een capture, geen bron van waarheid

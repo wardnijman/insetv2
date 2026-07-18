@@ -1,0 +1,12 @@
+{
+  "id": "dev-standalone",
+  "providers": ["tff"],
+  "widgetBehavior": { "loadRatesInBackground": false, "labelFormat": "a6" },
+  "host": {
+    "mode": "standalone",
+    "containerId": "inset-widget",
+    "endpoints": { "api": "http://localhost:5199" }
+  },
+  "branding": { "name": "Inset dev" },
+  "defaults": { "originCountry": "NL" }
+}
