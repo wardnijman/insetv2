@@ -7,6 +7,7 @@ import { render } from "svelte/server";
 import { writable } from "svelte/store";
 import WizardShell from "./lib/WizardShell.svelte";
 import ReceiverStepBlock from "./lib/components/ReceiverStepBlock.svelte";
+import PackageTableStepBlock from "./lib/components/PackageTableStepBlock.svelte";
 import { setLang } from "./lib/state/messageStore";
 import { getWidgetProvider } from "./lib/providers/registry";
 import devTenant from "../../tenants/dev-standalone.json";
@@ -49,6 +50,13 @@ const rec = render(ReceiverStepBlock, {
 check('receiver: NL-modus toont postcode+huisnummer-rij ("Huisnummer")', rec.body.includes("Huisnummer"));
 check('receiver: type-toggle ("Bedrijf"/"Particulier")', rec.body.includes("Bedrijf") && rec.body.includes("Particulier"));
 check('receiver: adresboek + paste-vak', rec.body.includes("Adresboek") && rec.body.includes("Plak hier"));
+
+// Pakkettenstap (rows worden in onMount opgebouwd, dus SSR toont de lege tabel-chrome).
+const pkg = render(PackageTableStepBlock, {
+  props: { order: null, shipment: recShipment, provider, userId: "smoke" },
+});
+check('packages: sectie + tabelkop ("Verpakkingen", "Afmetingen")', pkg.body.includes("Verpakkingen") && pkg.body.includes("Afmetingen"));
+check('packages: regel-toevoegen-actie', pkg.body.includes("Regel toevoegen"));
 
 if (fail) {
   console.error(`SSR-smoke FAALT (${fail})`);

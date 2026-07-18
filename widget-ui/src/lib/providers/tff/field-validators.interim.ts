@@ -81,6 +81,25 @@ function addressValidators(prefix: "shipperAddress" | "recipientAddress"): Recor
   };
 }
 
+// INTERIM pakket-rij-validators (v1: generated validatePackageLength/Width/Height/Weight).
+// Documenten hebben geen afmetingen/gewicht nodig (v1: canSave behandelt document als
+// compleet zonder dims); anders positief verplicht. Echte TFF-limieten komen bij de
+// fabriek-regeneratie.
+function dim(label: string, key: "length" | "width" | "height" | "weight") {
+  return (row: { type: string } & Record<string, unknown>): ValidationResult => {
+    if (row.type === "document") return ok;
+    const n = Number(row[key]);
+    return Number.isFinite(n) && n > 0 ? ok : fail(`${label} moet groter dan 0 zijn`);
+  };
+}
+
+export const interimPackageValidators = {
+  length: dim("Lengte", "length"),
+  width: dim("Breedte", "width"),
+  height: dim("Hoogte", "height"),
+  weight: dim("Gewicht", "weight"),
+};
+
 export const interimFieldValidators: Record<string, FieldValidator> = {
   ...addressValidators("shipperAddress"),
   ...addressValidators("recipientAddress"),

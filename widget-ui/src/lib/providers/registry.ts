@@ -5,7 +5,10 @@
 // stap 5) gaat deze laag per provider EMITTEN en dit bestand wordt dan pure bedrading.
 
 import domainTff from "./tff/domain.json";
-import { interimFieldValidators } from "./tff/field-validators.interim";
+import {
+  interimFieldValidators,
+  interimPackageValidators,
+} from "./tff/field-validators.interim";
 import type { WidgetProviderLayer } from "./types";
 
 const providers: Record<string, WidgetProviderLayer> = {
@@ -13,6 +16,7 @@ const providers: Record<string, WidgetProviderLayer> = {
     id: "tff",
     domain: domainTff as unknown as WidgetProviderLayer["domain"],
     fieldValidators: interimFieldValidators,
+    packageValidators: interimPackageValidators,
   },
 };
 
