@@ -20,13 +20,14 @@ export async function loadAdapter(portal: string): Promise<PortalAuthAdapter> {
 
 export async function runFlow(
   pool: SessionPool,
+  tenant: string,
   portal: string,
   flow: string,
   input: unknown,
 ): Promise<unknown> {
   const transform = await loadTransform(portal, flow);
   const payload = transform(input);
-  const ctx = startRun(portal, flow);
+  const ctx = startRun(tenant, portal, flow);
   record(ctx, "payload", payload);
   try {
     const resp = await pool.submit(flow, payload);

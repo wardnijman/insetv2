@@ -17,17 +17,17 @@ const adapter = await loadAdapter("tff");
 const pool = new SessionPool(adapter);
 
 console.log("=== 1: getRates (happy path, verse login) ===");
-console.log("  rates:", JSON.stringify(await runFlow(pool, "tff", "getRates", input)));
+console.log("  rates:", JSON.stringify(await runFlow(pool, "demo-forwarder", "tff", "getRates", input)));
 
 console.log("\n=== 2: tweede call — sessie hergebruikt (geen nieuwe login) ===");
-console.log("  rates:", JSON.stringify(await runFlow(pool, "tff", "getRates", input)));
+console.log("  rates:", JSON.stringify(await runFlow(pool, "demo-forwarder", "tff", "getRates", input)));
 
 console.log("\n=== 3: server-side logout -> refresh faalt -> re-login-fallback + retry ===");
 __mockExpireAll();
-console.log("  rates:", JSON.stringify(await runFlow(pool, "tff", "getRates", input)));
+console.log("  rates:", JSON.stringify(await runFlow(pool, "demo-forwarder", "tff", "getRates", input)));
 
 console.log("\n=== 4: token bijna verlopen -> proactieve refresh vóór de call ===");
 __mockExpireSoon(pool.session!);
-console.log("  rates:", JSON.stringify(await runFlow(pool, "tff", "getRates", input)));
+console.log("  rates:", JSON.stringify(await runFlow(pool, "demo-forwarder", "tff", "getRates", input)));
 
 console.log("\nOK — pool zonder body-injectie; token-lifecycle: proactieve refresh + refresh/re-login-fallback.");

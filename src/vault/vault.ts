@@ -1,16 +1,16 @@
-// Credential-vault (R4.4). Envelope-encryptie: per portaal een eigen Data Encryption
-// Key (DEK) die de creds versleutelt; de DEK zelf wordt versleuteld met de master-key
-// (KEK). Elke get/put wordt geaudit. Nul plaintext at rest, nul secrets in git.
-// Dit is de directe tegenhanger van de v1-doodzonde (plaintext creds in config.json, §8).
+// Credential-vault (R4.4), multi-tenant. Sleutel = (tenant, portaal, credIndex):
+// een klant (forwarder óf verlader) heeft één of meer logins per portaal. Envelope:
+// per-cred DEK versleutelt de creds; de DEK zelf versleuteld met de master-key (KEK).
+// Per-tenant map (.vault/<tenant>/) zodat per-tenant backup = de map kopiëren (R4.1).
+// Elke get/put geaudit. Nul plaintext at rest — tegenhanger v1-doodzonde (§8).
 //
-// De KEK komt uit process.env.INSET_MASTER_KEY (32 bytes, base64) — in prod uit een KMS,
-// nooit uit de repo. Faalt gesloten als de key ontbreekt of niet klopt.
+// KEK uit process.env.INSET_MASTER_KEY (32 bytes base64) — prod: KMS, nooit uit de repo.
 
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { readFileSync, writeFileSync, mkdirSync, appendFileSync, existsSync } from "node:fs";
+import { dirname } from "node:path";
 
 const VAULT_DIR = ".vault";
-
 interface Enc { iv: string; tag: string; ct: string }
 
 function kek(): Buffer {
@@ -34,30 +34,34 @@ function decrypt(key: Buffer, e: Enc): Buffer {
   return Buffer.concat([d.update(Buffer.from(e.ct, "base64")), d.final()]);
 }
 
-function audit(portal: string, op: string): void {
-  mkdirSync(VAULT_DIR, { recursive: true });
-  appendFileSync(`${VAULT_DIR}/audit.log`, `${new Date().toISOString()} ${op} ${portal}\n`);
+// Per-tenant pad. credIndex laat meerdere logins per (tenant, portaal) toe (pooling).
+function credPath(tenant: string, portal: string, credIndex: number): string {
+  return `${VAULT_DIR}/${tenant}/${portal}-${credIndex}.json`;
 }
 
-/** Versleutel en bewaar een credential-blob per portaal (envelope). */
-export function putCredential(portal: string, secret: Record<string, string>): void {
+function audit(tenant: string, portal: string, credIndex: number, op: string): void {
+  mkdirSync(VAULT_DIR, { recursive: true });
+  appendFileSync(`${VAULT_DIR}/audit.log`, `${new Date().toISOString()} ${op} ${tenant}/${portal}#${credIndex}\n`);
+}
+
+export function putCredential(tenant: string, portal: string, secret: Record<string, string>, credIndex = 0): void {
   const dek = randomBytes(32);
   const encSecret = encrypt(dek, Buffer.from(JSON.stringify(secret), "utf8"));
-  const encDek = encrypt(kek(), dek); // DEK versleuteld met de master-key
-  mkdirSync(VAULT_DIR, { recursive: true });
-  writeFileSync(`${VAULT_DIR}/${portal}.json`, JSON.stringify({ portal, encDek, encSecret }, null, 2));
-  audit(portal, "put");
+  const encDek = encrypt(kek(), dek);
+  const path = credPath(tenant, portal, credIndex);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, JSON.stringify({ tenant, portal, credIndex, encDek, encSecret }, null, 2));
+  audit(tenant, portal, credIndex, "put");
 }
 
-/** Ontsleutel de creds van een portaal. Faalt (throws) bij ontbrekende/verkeerde KEK. */
-export function getCredential(portal: string): Record<string, string> {
-  const blob = JSON.parse(readFileSync(`${VAULT_DIR}/${portal}.json`, "utf8"));
+export function getCredential(tenant: string, portal: string, credIndex = 0): Record<string, string> {
+  const blob = JSON.parse(readFileSync(credPath(tenant, portal, credIndex), "utf8"));
   const dek = decrypt(kek(), blob.encDek);
   const secret = JSON.parse(decrypt(dek, blob.encSecret).toString("utf8"));
-  audit(portal, "get");
+  audit(tenant, portal, credIndex, "get");
   return secret as Record<string, string>;
 }
 
-export function hasCredential(portal: string): boolean {
-  return existsSync(`${VAULT_DIR}/${portal}.json`);
+export function hasCredential(tenant: string, portal: string, credIndex = 0): boolean {
+  return existsSync(credPath(tenant, portal, credIndex));
 }
