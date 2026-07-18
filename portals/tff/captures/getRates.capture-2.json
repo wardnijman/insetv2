@@ -1,0 +1,23 @@
+{
+  "_comment": "Tweede opname van DEZELFDE form, andere sessie: ander _token, extra honeypot 'ks'. Bewijst dat de fingerprint stabiel blijft omdat volatiele velden worden gestript.",
+  "portal": "tff",
+  "flow": "getRates",
+  "request": {
+    "method": "POST",
+    "url": "https://tff.example/rates",
+    "contentType": "application/x-www-form-urlencoded",
+    "fields": {
+      "verzender_land": "NL",
+      "verzender_postcode": "3011AA",
+      "verzender_straat": "Coolsingel 1",
+      "ontvanger_land": "DU",
+      "ontvanger_postcode": "10115",
+      "ontvanger_straat": "Unter den Linden 1",
+      "gewicht": "1200",
+      "_token": "Zz88Kp1WvNq3Ba7Ce0Rd2",
+      "hp_email": "",
+      "ks": ""
+    }
+  },
+  "response": { "status": 200, "ratesCount": 3 }
+}

@@ -1,0 +1,22 @@
+{
+  "_comment": "Voorbeeld-capture: één opgenomen getRates-POST zoals een recorder/MITM 'm zou vastleggen. In prod komt dit uit een echte HAR/DOM-opname; hier met de hand als mechanisme-bewijs.",
+  "portal": "tff",
+  "flow": "getRates",
+  "request": {
+    "method": "POST",
+    "url": "https://tff.example/rates",
+    "contentType": "application/x-www-form-urlencoded",
+    "fields": {
+      "verzender_land": "NL",
+      "verzender_postcode": "1011AB",
+      "verzender_straat": "Damrak 1",
+      "ontvanger_land": "USA",
+      "ontvanger_postcode": "10001",
+      "ontvanger_straat": "5th Ave",
+      "gewicht": "2500",
+      "_token": "9aF2bQ7kLmZ0xR4tYs1Pd8",
+      "hp_email": ""
+    }
+  },
+  "response": { "status": 200, "ratesCount": 4 }
+}

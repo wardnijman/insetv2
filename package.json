@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Inset v2 — uniform verzendcontract, discovery-first. Zie ../plugship/docs/v2-architectuur.md",
   "scripts": {
+    "ingest": "node --experimental-strip-types src/recorder/ingest.ts",
     "compile": "node --experimental-strip-types src/fabriek/compile.ts",
     "contract-test": "node --experimental-strip-types src/contract/contract-test.ts"
   }
