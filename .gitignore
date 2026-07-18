@@ -9,6 +9,7 @@ secrets/
 credentials.json
 .vault/
 .traces/
+.data/
 
 # === Gegenereerde artefacten — buiten git, generatie is een build-stap (R2.5) ===
 generated/
