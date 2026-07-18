@@ -1,0 +1,11 @@
+{
+  "_comment": "TFF-specifieke teksten die v1 in componenten hardcodeerde — nu per-tenant. Andere tenants erven de base of vertalen zelf.",
+  "nl": {
+    "notice.ddpClearance": "Inklaringskosten: € 43,-",
+    "notice.loggedOut": "Je bent uitgelogd bij TFF"
+  },
+  "en": {
+    "notice.ddpClearance": "Clearance fee: € 43.00",
+    "notice.loggedOut": "You have been logged out of TFF"
+  }
+}
