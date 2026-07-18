@@ -1,0 +1,12 @@
+{
+  "id": "acme-standalone",
+  "providers": ["transheroes"],
+  "widgetBehavior": { "loadRatesInBackground": false, "labelFormat": "a4" },
+  "host": {
+    "mode": "standalone",
+    "containerId": "inset-widget",
+    "endpoints": { "api": "https://api.transportal.transheroes.com" }
+  },
+  "branding": { "name": "Acme BV" },
+  "defaults": { "originCountry": "NL" }
+}

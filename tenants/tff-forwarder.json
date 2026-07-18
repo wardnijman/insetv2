@@ -7,6 +7,16 @@
     "loadRatesInBackground": true,
     "labelFormat": "a6"
   },
+  "host": {
+    "mode": "embedded",
+    "mountSelector": ".stap1",
+    "endpoints": {
+      "api": "https://tffxpress.com",
+      "auth": "https://tffxpress.com/login",
+      "pdf": "https://pdf.tffxpress.com"
+    },
+    "loggedOutSignal": { "selector": ".alert-danger", "textIncludes": "uitgelogd" }
+  },
   "branding": { "name": "TFF Express", "primaryColor": "#0a3d62" },
   "defaults": { "originCountry": "NL" }
 }
