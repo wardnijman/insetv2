@@ -15,7 +15,8 @@
     "trace": "node --experimental-strip-types src/observability/trace-query.ts",
     "verify-axiom": "node --env-file=.env --experimental-strip-types src/observability/verify-axiom.ts",
     "flush-axiom": "node --env-file=.env --experimental-strip-types src/observability/flush-axiom.ts",
+    "verify-widget": "node --experimental-strip-types src/widget/verify-widget.ts",
     "demo": "node --experimental-strip-types src/runtime/run-demo.ts",
-    "test": "node --experimental-strip-types src/fabriek/compile.ts tff && node --experimental-strip-types src/fabriek/compile.ts transheroes && node --experimental-strip-types src/contract/contract-test.ts && node --experimental-strip-types src/fabriek/verify-generalized.ts && node --experimental-strip-types src/runtime/verify-capabilities.ts && node --experimental-strip-types src/vault/verify-vault.ts && node --experimental-strip-types src/observability/verify-trace.ts && node --experimental-strip-types --experimental-sqlite src/db/verify-db.ts && node --experimental-strip-types src/runtime/run-demo.ts && node --experimental-strip-types src/probe/drift-probe.ts"
+    "test": "node --experimental-strip-types src/fabriek/compile.ts tff && node --experimental-strip-types src/fabriek/compile.ts transheroes && node --experimental-strip-types src/contract/contract-test.ts && node --experimental-strip-types src/fabriek/verify-generalized.ts && node --experimental-strip-types src/runtime/verify-capabilities.ts && node --experimental-strip-types src/vault/verify-vault.ts && node --experimental-strip-types src/observability/verify-trace.ts && node --experimental-strip-types --experimental-sqlite src/db/verify-db.ts && node --experimental-strip-types src/widget/verify-widget.ts && node --experimental-strip-types src/runtime/run-demo.ts && node --experimental-strip-types src/probe/drift-probe.ts"
   }
 }

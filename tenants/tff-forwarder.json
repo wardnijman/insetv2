@@ -1,0 +1,12 @@
+{
+  "id": "tff-forwarder",
+  "providers": ["tff"],
+  "widgetBehavior": {
+    "skipSenderIfComplete": true,
+    "skipReceiverIfFilled": true,
+    "loadRatesInBackground": true,
+    "labelFormat": "a6"
+  },
+  "branding": { "name": "TFF Express", "primaryColor": "#0a3d62" },
+  "defaults": { "originCountry": "NL" }
+}
