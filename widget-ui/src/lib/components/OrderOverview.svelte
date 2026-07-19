@@ -2,15 +2,16 @@
      Chrome (zoekbalk, kolommen, bulk-balk, paginering, footer, ship-together-picker)
      en de status-/selectielogica zijn v1-verbatim. Bewuste afwijkingen:
 
-     1) Wizard = WizardShell (v2) i.p.v. ShipWizardModal. De shell kent (nog) geen
-        initialShipment/startStep/redoAllSteps/forceManual/forceInlineRates/batchLabel
-        en geen onHide/onAttemptBackground/onExtraInfoRequired/onQueueCorrected —
-        TODO(order-flow). De prefill-variabelen worden hier al wél berekend (edits/
-        bounce-partials) zodat de hand-off er later 1-op-1 in kan.
-     2) TODO(order-flow): headless queue (/api/shipments/*), clientPreflight en de
-        RateChoiceModal zijn niet geport. jobStates blijft leeg; readiness komt alleen
-        uit de server-side order.shipReadiness. "Versturen" opent interim ALTIJD de
-        wizard (v1 route: queue → bounce → pill).
+     1) Wizard = WizardShell (v2) i.p.v. ShipWizardModal. De shell draagt nu
+        initialShipment/startStep + de events attemptbackground/extrainforequired/
+        queuecorrected (en close/success/shipmenterror). redoAllSteps/forceManual/
+        forceInlineRates/batchLabel blijven TODO(order-flow) — de prefill-variabelen
+        worden hier berekend maar redo/forceManual sturen (nog) niet de shell.
+     2) "Versturen" volgt weer v1's flow: clientPreflight → confident? headless boeken
+        (headlessShip, proxy-first) : wizard op de juiste stap prefilled. no_rule →
+        RateChoiceModal (rates hier opgehaald). De server-side headless QUEUE
+        (/api/shipments/*) is er niet; jobStates blijft leeg (job-pills inert). Alle
+        proxy-afhankelijkheden (/api/rates|choose|book) zijn fail-soft.
      3) TODO(order-flow): Exact-uitgebreid-zoeken (extended-search) is Exact-specifiek
         en weggelaten; extTotal blijft 0, de footer toont dan gewoon de lijstlengte.
      4) Order-persistentie (/api/orders/shipment/set, /api/orders/set, /api/orders/
@@ -58,6 +59,10 @@
   import type { StatusKey, StatusToken, Token } from "../types/search";
   import LabelBasket from "./LabelBasket.svelte";
   import { printPDFBinary } from "../print/printPDFBinary";
+  import { clientPreflight } from "../wizard/clientPreflight";
+  import { headlessShip, buildFilledShipment } from "../wizard/headlessShip";
+  import { fetchRates } from "../api/ratesClient";
+  import RateChoiceModal from "./RateChoiceModal.svelte";
 
   // ---- runes props (v2: tenant + provider erbij — lopen door naar de WizardShell)
   type Props = { tenant: TenantConfig; provider: WidgetProviderLayer; userId: string; token: string };
@@ -101,9 +106,17 @@
   let shipBinQueue = $state<EnrichedOrder[]>([]);
   let shipBinTotal = $state(0);
   let shipBinIndex = $state(0);
-  // Orders that couldn't be shipped headlessly — keyed by orderId. In v2 interim alleen
-  // gevuld via shipmenterror-afhandeling; de headless queue is TODO(order-flow).
+  // Orders that couldn't be shipped headlessly — keyed by orderId. Gevuld door de headless
+  // attempt (needs_modal) en shipmenterror-afhandeling; de attentie-pill leest hieruit.
   let extraInfoOrders = $state<Record<string, { shipment?: ShipmentTemplate; reason?: string }>>({});
+
+  // ── Rate-picker (RateChoiceModal) — getoond bij no_rule (meerdere kandidaat-rates, geen
+  // automatische servicekeuze). Rates worden hier één keer opgehaald (proxy) en meegegeven;
+  // de picker hergebruikt de echte ShipStepBlock. Fail-soft: geen rates → de volle wizard.
+  let ratePickerOrder = $state<EnrichedOrder | null>(null);
+  let ratePickerRates = $state<any[]>([]);
+  let ratePickerTemplate = $state<ShipmentTemplate | undefined>(undefined);
+  let showRatePicker = $state(false);
 
   // columns prefs
   const columnsSeed = userPreferences?.ui?.orderOverview?.columns as
@@ -129,10 +142,16 @@
     return unsub;
   });
 
-  // TODO(order-flow): v1 draaide hier clientPreflight (pure, no-network auto-ship-check)
-  // over elke NEW order. Interim is de server-side shipReadiness (order-sync) de enige bron.
+  // v1-gedrag: pure, no-network clientPreflight over elke order zodat de UI vóór enige
+  // portaal-call toont welke orders schoon auto-shippen (ready), welke alleen een service
+  // missen (no_rule) en welke een hand nodig hebben (needs_input/error). Fail-soft terug op
+  // de server-side shipReadiness als de preflight onverwacht faalt.
   function readinessFor(order: EnrichedOrder): ShipReadiness | undefined {
-    return order.shipReadiness as ShipReadiness | undefined;
+    try {
+      return clientPreflight(order, provider) as ShipReadiness;
+    } catch {
+      return order.shipReadiness as ShipReadiness | undefined;
+    }
   }
 
   // ── Headless shipment queue (server-side) ────────────────────────────────
@@ -402,9 +421,121 @@
       openResolveForOrder(id);
       return;
     }
-    // TODO(order-flow): v1 gaf 'm hier aan de server-queue (headless ship; bij `no_rule`
-    // bounce → rate-picker). Interim opent óók dit pad de wizard.
-    openResolveForOrder(id);
+    // No automatic service choice configured → let the user pick a service in a lightweight
+    // picker (rates fetched here); fail-soft to the full wizard when rates are unavailable.
+    if (cr && cr.status === "no_rule") {
+      await openRatePicker(order);
+      return;
+    }
+    // Confident ("ready") → attempt a headless booking; fail-soft to the wizard on needs_modal.
+    await attemptHeadless(order);
+  }
+
+  /** v1-flow: draai de client-side headless runner. Lukt het → success-afhandeling; anders
+   *  open de wizard op de stap die de runner flagde, prefilled (needs_modal = de prefill).
+   *  Alle backend-afhankelijkheden (proxy /api/rates|choose|book) zijn fail-soft. */
+  async function attemptHeadless(order: EnrichedOrder) {
+    const id = String(order.orderId);
+    try {
+      const result = await headlessShip(order, userId, provider);
+      if (result.status === "ok") {
+        const d: any = result.result ?? {};
+        if (extraInfoOrders[id]) {
+          const next = { ...extraInfoOrders };
+          delete next[id];
+          extraInfoOrders = next;
+        }
+        await handleShipmentSuccess(
+          order,
+          d.trackingNumber || "",
+          d.forwarderRef || "",
+          d.pdfUrl || "",
+          d.carrier || "",
+          d.service || "",
+          d.destination || d.country || "",
+          result.shipment,
+        );
+        toast.success(
+          `${m.orderOverview.labelCreatedActionStart}${order.orderId}${m.orderOverview.labelCreatedActionMid}${
+            (order.shippingAddress?.firstName || "") + " " + (order.shippingAddress?.lastName || "")
+          }${m.orderOverview.labelCreatedActionEnd}`,
+        );
+        if (shipBinTotal > 0) void advanceShipBin();
+        return;
+      }
+      // needs_modal → record attention (pill) + open the wizard at the flagged step, prefilled.
+      extraInfoOrders = { ...extraInfoOrders, [id]: { shipment: result.shipment, reason: result.reason } };
+      headlessInitialShipment = sanitizeForModal(result.shipment);
+      resolveStartStep = (result as any).step;
+      resolveRedoAllSteps = false;
+      resolveForceManual = false;
+      selectedOrder = order;
+      showShipmentModal = true;
+    } catch (e) {
+      // Fail-soft: any unexpected error (dead proxy, booking route missing) → open the wizard.
+      console.warn("headless attempt failed (interim, fail-soft)", e);
+      openResolveForOrder(id);
+    }
+  }
+
+  /** no_rule → fetch rates (proxy) and open the RateChoiceModal so the user picks a service
+   *  without the full wizard. Fail-soft: no rates / fetch error → the wizard. */
+  async function openRatePicker(order: EnrichedOrder) {
+    const id = String(order.orderId);
+    try {
+      const partial = buildFilledShipment(order);
+      const rates = await fetchRates(partial);
+      if (!rates?.length) {
+        openResolveForOrder(id);
+        return;
+      }
+      ratePickerTemplate = partial;
+      ratePickerRates = rates.map((r) => ({ ...r, price: String(r.price) }));
+      ratePickerOrder = order;
+      showRatePicker = true;
+    } catch (e) {
+      console.warn("rate picker prep failed (interim, fail-soft)", e);
+      openResolveForOrder(id);
+    }
+  }
+
+  function closeRatePicker() {
+    showRatePicker = false;
+    ratePickerOrder = null;
+    ratePickerRates = [];
+    ratePickerTemplate = undefined;
+  }
+
+  /** "Zending aanpassen" in de picker → volle wizard met de huidige gegevens. */
+  function ratePickerEdit(startStep?: string) {
+    const order = ratePickerOrder;
+    const tmpl = ratePickerTemplate;
+    closeRatePicker();
+    if (!order) return;
+    headlessInitialShipment = sanitizeForModal(tmpl);
+    resolveStartStep = startStep;
+    resolveRedoAllSteps = false;
+    resolveForceManual = true;
+    selectedOrder = order;
+    showShipmentModal = true;
+  }
+
+  /** Picker "Verzenden" → v2 heeft geen server-queue: reik de gekozen zending door aan de
+   *  wizard-ship-stap zodat de gebruiker daar proxy-first boekt. Fail-soft. */
+  function ratePickerSubmit(sel: {
+    chosenRate: { carrier: string; service: string; servicecode?: string };
+    extraFieldValues: Record<string, any>;
+    prebuiltShipment?: ShipmentTemplate;
+  }) {
+    const order = ratePickerOrder;
+    closeRatePicker();
+    if (!order) return;
+    headlessInitialShipment = sanitizeForModal(sel.prebuiltShipment);
+    resolveStartStep = "ship";
+    resolveRedoAllSteps = false;
+    resolveForceManual = true;
+    selectedOrder = order;
+    showShipmentModal = true;
   }
 
   /** "Handmatig" button — the user wants to walk through every wizard step for this order,
@@ -1563,6 +1694,44 @@
           await markShipmentAsFailed(eventOrder, errorMessage, shipment);
         }
       }}
+      on:attemptbackground={() => {
+        // v1 sloot de modal hier direct voor UX. In v2 dispatcht de shell success/
+        // extrainforequired ná deze event — en een dispatch werkt niet post-unmount — dus
+        // we laten de wizard OPEN tot een van beide binnenkomt (die sluiten 'm dan).
+      }}
+      on:extrainforequired={({ detail: evt }) => {
+        const o = (evt?.order ?? selectedOrder) as EnrichedOrder | null;
+        if (o) {
+          extraInfoOrders = {
+            ...extraInfoOrders,
+            [String(o.orderId)]: { shipment: evt?.shipment, reason: evt?.reason },
+          };
+        }
+        // Headless kon niet auto-shippen → terug naar de lijst met de attentie-pill; de
+        // gebruiker klikt 'm aan om de wizard prefilled te heropenen.
+        closeWizard();
+        if (shipBinTotal > 0) stopShipBin();
+      }}
+      on:queuecorrected={async ({ detail: evt }) => {
+        // v2 heeft geen server-queue: behandel als een directe headless-poging op de
+        // gecorrigeerde zending. (Gereserveerd; de shell dispatcht dit nu niet.)
+        const o = (evt?.order ?? selectedOrder) as EnrichedOrder | null;
+        closeWizard();
+        if (o) await attemptHeadless(o);
+      }}
+    />
+  {/if}
+
+  {#if showRatePicker && ratePickerOrder}
+    <RateChoiceModal
+      order={ratePickerOrder}
+      {provider}
+      {userId}
+      availableRates={ratePickerRates}
+      partialTemplate={ratePickerTemplate}
+      onClose={closeRatePicker}
+      onSubmit={ratePickerSubmit}
+      onEditShipment={ratePickerEdit}
     />
   {/if}
 

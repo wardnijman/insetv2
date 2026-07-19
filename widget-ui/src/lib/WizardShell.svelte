@@ -53,8 +53,11 @@
     import ProductStepBlock from "./components/ProductStepBlock.svelte";
     import ShipStepBlock from "./components/ShipStepBlock.svelte";
     import HelpDrawer from "./components/HelpDrawer.svelte";
-    import { autoFetchRates } from "./api/rateFetcher";
+    import { autoFetchRates, rateFetchStart } from "./api/rateFetcher";
     import { submitShipmentByType } from "./api/submitShipment";
+    import { headlessShip } from "./wizard/headlessShip";
+    import { saveShipDraft, clearShipDraft } from "./state/shipDraft";
+    import { saveShipEdits } from "./state/shipEdits";
     import { toast } from "./components/toast/toast";
     import ToastDisplay from "./components/toast/ToastDisplay.svelte";
 
@@ -67,6 +70,12 @@
     export let order: any = null;
     /** Auth-token voor deep links (ShipStepBlock's "Lang wachten?"-hint). Optioneel. */
     export let token: string = "";
+    /** Prefill (order-flow): open de wizard met een reeds (deels) opgebouwd shipment —
+     *  headless needs_modal, saved edits of een bounce-partial. Vervangt de order-seed. */
+    export let initialShipment: ShipmentTemplate | undefined = undefined;
+    /** Open de wizard direct op deze stap (order-flow: de stap die headless/preflight flagde,
+     *  of de stap uit een herstelde draft). */
+    export let startStep: string | undefined = undefined;
 
     const dispatch = createEventDispatcher<{
         /** Annuleren-knop of Escape — de host-adapter regelt tonen/verbergen. */
@@ -75,6 +84,16 @@
         success: { order: any; detail: any };
         /** Mislukte boeking; vorm als v1's onShipmentError(reason, shipment, order). */
         shipmenterror: { reason: string; shipment: ShipmentTemplate; order: any };
+        /** v1 onAttemptBackground — de host mag de wizard direct sluiten (goede UX) zodra
+         *  de headless achtergrond-boeking start. */
+        attemptbackground: void;
+        /** v1 onExtraInfoRequired — headless kon niet auto-shippen; de host toont de
+         *  attentie-pill (order-flow) met de prefill + reden. */
+        extrainforequired: { shipment: ShipmentTemplate; order: any; reason: string };
+        /** v1 onQueueCorrected — een wizard-voltooide zending zou in v1 naar de server-queue.
+         *  v2 heeft géén queue; gereserveerd voor interface-pariteit (de shell boekt direct
+         *  via de headless-poging). */
+        queuecorrected: { shipment: ShipmentTemplate; order: any; skipAutoRateSelection: boolean };
     }>();
 
     const emptyAddress = () => ({
@@ -93,7 +112,7 @@
     // Shipment-seed als v1's modal (volledige shipmentOptions-defaults zodat de hidden
     // ValidatedInputs/persistentFieldValidators een doel hebben), maar tenant-gedreven:
     // v1 hardcodeerde "NL"-origin, hier tenant.defaults. Order-prefill geguard op order.
-    export const shipment = writable<ShipmentTemplate>({
+    export const shipment = writable<ShipmentTemplate>(initialShipment ?? {
         carrier: "",
         source: order?.orderPlatform?.toLowerCase?.() ?? "manual",
         packages: [],
@@ -186,6 +205,15 @@
 
     $: isLastStep = $stepIdx === visible.length - 1;
 
+    // Auto-ship-aanbod (v1 shouldOfferAutoShip): heeft een ingeschakelde rule een
+    // rate_selection-actie én is de stap ná deze de ship-stap, dan is "Verzenden" een
+    // headless achtergrond-boeking i.p.v. de ship-stap tonen. Zonder zo'n rule (of in de
+    // smoke: userPreferences undefined) blijft het pad uit en verandert er niets.
+    const hasRateSelectionRule = (userPreferences?.automationRules ?? []).some(
+        (r: any) => r.enabled && r.actions?.some((a: any) => a.toType === "rate_selection"),
+    );
+    $: shouldOfferAutoShip = hasRateSelectionRule && visible[$stepIdx + 1]?.id === "ship";
+
     // Verder-guard: sectie-gescoopte veldvaliditeit (v1's isCurrentStepValid).
     $: currentSection = currentStep?.sectionKey ?? "";
     $: isCurrentStepValid =
@@ -230,19 +258,58 @@
         panelEl?.scrollIntoView({ block: "start" });
 
         // Zelfde entree als v1: de engine bepaalt de eerste te renderen stap
-        // (skip-toggles en auto-patches passeren zonder scherm).
+        // (skip-toggles en auto-patches passeren zonder scherm). Order-flow: een
+        // prefill met verse rates (ratesHash) opent direct op de ship-stap; een
+        // meegegeven startStep pint de exacte stap (headless/preflight-flag of draft).
         void (async () => {
-            const res = await advance(stepsAll, $shipment as any, meta, 0);
+            const startIdx = (initialShipment && (initialShipment as any).ratesHash)
+                ? Math.max(0, stepsAll.findIndex((s) => s.id === "ship"))
+                : 0;
+            const res = await advance(stepsAll, $shipment as any, meta, startIdx);
             if (res.type === "done") { done = true; return; }
             shipment.set(res.shipment as unknown as ShipmentTemplate);
             const vis = buildVisibleSteps(stepsAll, { shipment: res.shipment, tenantId: tenant.id });
-            stepIdx.set(Math.max(0, vis.findIndex((s) => s.id === res.step.id)));
+            let idx = Math.max(0, vis.findIndex((s) => s.id === res.step.id));
+            if (startStep) {
+                const forced = vis.findIndex((s) => s.id === startStep);
+                if (forced >= 0) idx = forced;
+            }
+            stepIdx.set(idx);
         })();
 
         // v1-gedrag: rates worden reactief op de achtergrond opgehaald zodra
         // adressen+pakketten compleet zijn (readiness-suite uit de fabriek-emit).
-        // TODO(order-flow): v1 onderdrukte dit in queueInBackground-modus.
         const stop = autoFetchRates(shipment as any, fieldValidity, 800, provider.readiness) as unknown;
+
+        // ── Draft/edits-persistentie (order-flow) ────────────────────────────────
+        // Spiegel de in-progress wizard naar localStorage: shipDraft vangt een refresh/
+        // tab-close (OrderOverview herstelt 'm bij boot), shipEdits bewaart per-order edits
+        // over een DELIBERATE close. MEMORY-INVARIANT: elke ship-hand-off wist de edits —
+        // dat doet de host (OrderOverview) op success/hand-off; hier alleen SCHRIJVEN.
+        // Ship-together (shipTogetherCount-marker) slaat GEEN per-order edits op — dat zou
+        // de andere orders' items resurrecten als de primary order later solo wordt geopend.
+        let draftTimer: ReturnType<typeof setTimeout> | undefined;
+        const scheduleDraftSave = () => {
+            if (typeof localStorage === "undefined") return; // SSR-veilig
+            if (draftTimer) clearTimeout(draftTimer);
+            draftTimer = setTimeout(() => {
+                draftTimer = undefined;
+                if (!order) return; // standalone / host nullt de prop bij sluiten
+                const stepId = (currentStep?.id ?? "sender") as any;
+                saveShipDraft(userId, {
+                    order,
+                    shipment: get(shipment),
+                    stepId,
+                    forceManual: false,
+                    redoAllSteps: false,
+                });
+                if (!(order as any)?.shipTogetherCount) {
+                    saveShipEdits(userId, String(order.orderId), { shipment: get(shipment), stepId });
+                }
+            }, 300);
+        };
+        const unsubDraftShipment = shipment.subscribe(scheduleDraftSave);
+        const unsubDraftStep = stepIdx.subscribe(scheduleDraftSave);
 
         // Bij een stapwissel begint de nieuwe stap bovenaan in beeld — alleen
         // scrollen als de paneeltop uit beeld is, anders blijft de pagina rustig
@@ -255,9 +322,18 @@
         });
 
         return () => {
+            // Unsubscribe FIRST zodat een late headless-write (attemptBackgroundShip geeft de
+            // live store door) de draft die we zo wissen niet weer opbouwt — anders spookt er
+            // een wizard terug voor een order die al verzonden is.
+            unsubDraftShipment();
+            unsubDraftStep();
             unsubScrollTop();
+            if (draftTimer) clearTimeout(draftTimer);
             resetFieldValidity();
             if (typeof stop === "function") (stop as () => void)();
+            // Elke *programmatische* unmount (cancel, submit, hand-off) wist de draft; een
+            // page-unload draait dit niet, dus een draft in storage = "pagina stierf open".
+            clearShipDraft(userId);
         };
     });
 
@@ -428,12 +504,65 @@
             void revealStepErrors();
             return;
         }
-        // TODO(order-flow): v1 routeerde hier ook naar attemptBackgroundShip
-        // (queueInBackground / shouldOfferAutoShip) — komt met de queue-slice.
         if (isLastStep) {
             void verzend();
+        } else if (shouldOfferAutoShip) {
+            // Confident + rate-selection-rule aanwezig: sla de ship-stap over en boek headless.
+            void attemptBackgroundShip();
         } else {
             void next();
+        }
+    }
+
+    // Achtergrond-boeking (v1 attemptBackgroundShip → nu EVENTS i.p.v. callbacks). De host
+    // (OrderOverview) sluit de wizard op `attemptbackground` en toont bij `extrainforequired`
+    // de attentie-pill met prefill+reden; `success` loopt via het bestaande success-pad.
+    // v2 heeft geen server-queue → we boeken direct via headlessShip (proxy-first).
+    async function attemptBackgroundShip() {
+        if (booking) return;
+        booking = true; // dimt de primaire knop zolang de headless boeking loopt
+        const capturedOrder = order;
+        const currentShipment = get(shipment);
+        dispatch("attemptbackground"); // host mag de wizard direct sluiten (goede UX)
+
+        // Wacht op een nog lopende autoFetchRates zodat headlessShip niet met een halve
+        // portaalsessie z'n eigen (lege) fetch start en de 0-rates-breaker tript.
+        const waitUntil = Date.now() + 45_000;
+        while (get(rateFetchStart) != null && Date.now() < waitUntil) {
+            await new Promise((r) => setTimeout(r, 200));
+        }
+
+        try {
+            const result = await headlessShip(capturedOrder, userId, provider, {
+                initialShipment: currentShipment,
+                shipmentStore: shipment as any,
+            });
+            if (result.status === "ok") {
+                dispatch("success", {
+                    order: capturedOrder,
+                    detail: {
+                        trackingNumber: result.result?.trackingNumber || "",
+                        pdfUrl: result.result?.pdfUrl || "",
+                        carrier: result.result?.carrier || "",
+                        country: result.result?.destination || result.result?.country || "",
+                        service: result.result?.service || "",
+                        forwarderRef: result.result?.forwarderRef || "",
+                        shipmentTemplate: result.shipment,
+                    },
+                });
+            } else {
+                console.warn("[headlessShip] needs_modal:", result.reason);
+                dispatch("extrainforequired", { shipment: result.shipment, order: capturedOrder, reason: result.reason });
+            }
+        } catch (err: any) {
+            console.error("[headlessShip] unexpected throw:", err);
+            dispatch("extrainforequired", {
+                shipment: currentShipment,
+                order: capturedOrder,
+                reason: `headless ship error: ${err?.message ?? err}`,
+            });
+        } finally {
+            booking = false;
         }
     }
 

@@ -3,9 +3,9 @@
 // typeof-guards, incl. pruneShipEdits (SSR-veilig; wordt vanuit onMount aangeroepen).
 //
 // Invariant (memory "stateful ship edits"): elke ship-hand-off wist de edits, zodat
-// edits altijd nieuwer zijn dan bounce-partials. De v2-WizardShell spiegelt zijn
-// shipment nog niet hierheen (TODO(order-flow) in de shell) — de clear-paden in
-// OrderOverview zijn wél al bedraad zodat de invariant meteen klopt zodra dat komt.
+// edits altijd nieuwer zijn dan bounce-partials. Sinds de headless-flow-slice spiegelt
+// de WizardShell zijn shipment hierheen (behalve ship-together, shipTogetherCount-marker)
+// en wist OrderOverview de edits bij elke schone hand-off — de invariant klopt.
 
 import type { ShipmentTemplate } from "../types/config";
 import { sanitizeShipment, type WizardStepId } from "./shipDraft";

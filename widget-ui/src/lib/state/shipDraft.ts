@@ -3,9 +3,8 @@
 // maar v2's stap-typen leven in src/widget/engine; de string-union is identiek.
 // localStorage-toegang zit al achter typeof-guards (SSR-veilig).
 //
-// NB (interim): de v2-WizardShell schrijft/leest drafts nog niet (draft-persistentie
-// is daar TODO(order-flow)); OrderOverview's restore-pad is bedraad maar blijft inert
-// tot de shell gaat spiegelen.
+// Sinds de headless-flow-slice schrijft de WizardShell drafts (debounced) en wist ze
+// bij een schone hand-off; OrderOverview's restore-pad voedt ze als prefill terug.
 
 import type { ShipmentTemplate } from "../types/config";
 import type { EnrichedOrder } from "../types/webshop";

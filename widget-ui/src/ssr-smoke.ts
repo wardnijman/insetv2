@@ -85,6 +85,28 @@ const ship = render(shipMod.default, {
 });
 check("ship: rendert zonder crash met chrome", ship.body.length > 200 && /[Vv]erzend/.test(ship.body));
 
+// RateChoiceModal (no_rule rate-picker): host de ECHTE ShipStepBlock in een dialog. SSR
+// moet de dialog-chrome + de ship-stap renderen zonder crash (geen browser-API's).
+const rcmMod = await import("./lib/components/RateChoiceModal.svelte");
+const rcm = render(rcmMod.default, {
+  props: {
+    order: { orderId: "smoke-1", shippingAddress: { ...emptyAddress(), country: "NL" } } as any,
+    provider,
+    availableRates: [],
+    partialTemplate: {
+      shipperAddress: { ...emptyAddress(), country: "NL" },
+      recipientAddress: { ...emptyAddress(), country: "NL" },
+      packages: [],
+      products: [],
+      shipmentOptions: {},
+    } as unknown as ShipmentTemplate,
+    userId: "smoke",
+    onClose: () => {},
+    onSubmit: () => {},
+  },
+});
+check('rate-picker: dialog-chrome ("Kies een verzendservice") zonder crash', rcm.body.includes("Kies een verzendservice"));
+
 // Widget-ROOT (order-overview-slice): overview-chrome moet zichtbaar zijn zonder
 // browser-API's — zoekbalk-placeholder, de "Handmatig"-knop (createShipment-key),
 // lege-staat-tekst en de bulk-balk. Orders komen client-side (fetch in $effect draait
