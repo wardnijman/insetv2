@@ -42,7 +42,9 @@ export function buildSteps(tenant: TenantConfig): WizardStep[] {
       validate: () => ({ valid: true }),
     },
     {
-      id: "ship", sectionKey: "ship",
+      // sectionKey als v1 ("shipmentOptions"): de sectie-gescoopte Verzend-dim in de
+      // shell kijkt naar fieldValidity-prefixen — met "ship" was dat een no-op.
+      id: "ship", sectionKey: "shipmentOptions",
       shouldInclude: () => true,
       resolve: () => ({ type: "render" }),
       validate: () => ({ valid: true }),
