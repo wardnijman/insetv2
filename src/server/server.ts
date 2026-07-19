@@ -175,6 +175,19 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return json(res, 503, { ok: false, error: "ai_not_configured" });
     }
 
+    if (route === "/api/book" && req.method === "POST") {
+      // Interim: boeken (chooseOption+submit) vergt de fabriek-emit van de
+      // submit-TRANSFORMS (volgende fabriek-slice) + capability-guard-bedrading.
+      // 501 met duidelijk contract; de widget toont dit netjes.
+      return json(res, 501, { error: "booking_not_wired", message: "Boeken is nog niet bedraad in deze omgeving." });
+    }
+
+    if (route === "/api/service-points" && req.method === "GET") {
+      // Interim: access points komen later via het portaal; lege lijst degradeert
+      // de AccessPointSelector netjes ("geen access points beschikbaar").
+      return json(res, 200, []);
+    }
+
     if ((route === "/api/ai/suggest-hs" || route === "/api/ai/search-hs") && req.method === "POST") {
       // Interim: HS-suggestie (LLM) nog niet bedraad — zelfde 503-contract; de
       // HS-input degradeert naar handmatig invullen (v1 is daar al fail-soft op).

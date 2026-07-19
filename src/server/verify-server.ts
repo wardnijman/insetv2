@@ -77,7 +77,14 @@ await fetch(`${base}/api/product-profiles/learn`, {
 const profiles = (await (await fetch(`${base}/api/product-profiles/get?userId=u1`)).json()) as any;
 check("product-profielen: per-veld merge (deeldata wist hsCode niet)", profiles["SKU-9"]?.hsCode === "490199" && profiles["SKU-9"]?.value === 30);
 
-// 6) onbekende tenant faalt gesloten
+// 6) boeken-interim (501-contract) + service-points-interim (lege lijst)
+const book = await fetch(`${base}/api/book`, { method: "POST", body: "{}" });
+const bookBody = (await book.json()) as any;
+check("boeken: 501 booking_not_wired (interim-contract)", book.status === 501 && bookBody.error === "booking_not_wired");
+const sp = (await (await fetch(`${base}/api/service-points?postalCode=1011AB`)).json()) as unknown[];
+check("service-points: lege lijst (interim)", Array.isArray(sp) && sp.length === 0);
+
+// 7) onbekende tenant faalt gesloten
 const bad = await fetch(`http://127.0.0.1:${port}/t/bestaat-niet/api/rates`, { method: "POST", body: "{}" });
 check("onbekende tenant → 404", bad.status === 404);
 

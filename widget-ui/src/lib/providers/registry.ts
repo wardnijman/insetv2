@@ -4,7 +4,7 @@
 // semantisch bewezen tegen het v1-oracle in verify-widget-validators) — dit bestand is
 // pure bedrading. `npm run compile` (root) moet gedraaid zijn; de pre-hooks doen dat.
 
-import { widgetLayer, domain as tffDomain } from "../../../../generated/tff/widget/index.ts";
+import { widgetLayer, submitLayer, domain as tffDomain } from "../../../../generated/tff/widget/index.ts";
 import type { WidgetProviderLayer } from "./types";
 
 const providers: Record<string, WidgetProviderLayer> = {
@@ -14,7 +14,21 @@ const providers: Record<string, WidgetProviderLayer> = {
     fieldValidators: widgetLayer.fieldValidators,
     packageValidators: widgetLayer.packageValidators,
     gridValidators: widgetLayer.gridFns,
-    setLanguage: widgetLayer.setLanguage,
+    readiness: {
+      validateShipperAddress: widgetLayer.fns.validateShipperAddress,
+      validateRecipientAddress: widgetLayer.fns.validateRecipientAddress,
+      validatePackages: widgetLayer.fns.validatePackages,
+    },
+    submit: {
+      fingerprintMatrix: submitLayer.fingerprintMatrix,
+      widgetFieldsMatrix: submitLayer.widgetFieldsMatrix,
+      additionalFieldPolicies: submitLayer.additionalFieldPolicies as Record<string, unknown>,
+      validatorsByForm: submitLayer.validatorsByForm,
+    },
+    setLanguage: (lang: string) => {
+      widgetLayer.setLanguage(lang);
+      submitLayer.setLanguage(lang);
+    },
   },
 };
 

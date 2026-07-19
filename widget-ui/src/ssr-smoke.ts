@@ -77,10 +77,13 @@ const customs = render(prodMod.default, {
 check("customs: grid rendert het product", customs.body.includes("Boek over schepen") || customs.body.includes("SKU-1") || customs.body.includes("490199"));
 check("customs: HS/douane-chrome aanwezig", /HS|Douane|douane/.test(customs.body));
 
-// Interim verzendstap (rates via proxy; onMount-fetch draait niet in SSR → laadstaat).
-const shipMod = await import("./lib/components/ShipRatesInterim.svelte");
-const ship = render(shipMod.default, { props: { shipment: recShipment } });
-check('ship (interim): sectie + laadstaat', ship.body.includes("Verzending") && ship.body.includes("Tarieven ophalen"));
+// Verzendstap: de ECHTE ShipStepBlock-port (rates komen client-side na mount;
+// SSR moet de loader/chrome zonder crash renderen).
+const shipMod = await import("./lib/components/ShipStepBlock.svelte");
+const ship = render(shipMod.default, {
+  props: { provider, shipment: recShipment, userId: "smoke" },
+});
+check("ship: rendert zonder crash met chrome", ship.body.length > 200 && /[Vv]erzend/.test(ship.body));
 
 if (fail) {
   console.error(`SSR-smoke FAALT (${fail})`);

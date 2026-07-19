@@ -36,9 +36,24 @@ export interface WidgetProviderLayer {
   };
   /** Douane-grid-suite (§4: DE ene strikte product-line-laag) — voor de customs-stap. */
   gridValidators?: Record<string, (...args: any[]) => ValidationResult | ValidationResult[]>;
+  /** Hele-adres/pakket-suite (v1: B_getRates_0.validations) — readiness-gate van
+   *  api/rateFetcher.autoFetchRates (niet fetchen tot het shipment compleet is). */
+  readiness?: {
+    validateShipperAddress: (address: any) => ValidationResult;
+    validateRecipientAddress: (address: any) => ValidationResult;
+    validatePackages: (packages: any[]) => ValidationResult[];
+  };
   /** PDF-generatie/attach voor de paperless-factuur — komt uit de fabriek-emit van de
    *  paperless-steps (volgt met de ship-stap-slice); tot dan degradeert "Genereer" fail-soft. */
   paperlessInvoice?: PaperlessInvoiceProvider<any>;
+  /** Submit-laag uit de fabriek (S27, oracle-bewezen): fingerprint→formulier,
+   *  extra widget-velden per formulier, policies en de per-formulier validator-map. */
+  submit?: {
+    fingerprintMatrix: Record<string, string>;
+    widgetFieldsMatrix: Record<string, string[]>;
+    additionalFieldPolicies: Record<string, unknown>;
+    validatorsByForm: Record<string, Record<string, FieldValidator>>;
+  };
   /** Taalwissel voor validator-messages (v1: setValidationsLanguage). */
   setLanguage?: (lang: string) => void;
 }

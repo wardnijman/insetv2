@@ -17,7 +17,9 @@
     import ReceiverStepBlock from "./components/ReceiverStepBlock.svelte";
     import PackageTableStepBlock from "./components/PackageTableStepBlock.svelte";
     import ProductStepBlock from "./components/ProductStepBlock.svelte";
-    import ShipRatesInterim from "./components/ShipRatesInterim.svelte";
+    import ShipStepBlock from "./components/ShipStepBlock.svelte";
+    import { fieldValidity } from "./state/formValidation";
+    import { autoFetchRates } from "./api/rateFetcher";
     import ToastDisplay from "./components/toast/ToastDisplay.svelte";
     import { onMount } from "svelte";
 
@@ -72,14 +74,27 @@
 
     let done = false;
 
-    onMount(async () => {
+    onMount(() => {
         // Zelfde entree als v1: de engine bepaalt de eerste te renderen stap
         // (skip-toggles en auto-patches passeren zonder scherm).
-        const res = await advance(stepsAll, $shipment as any, meta, 0);
-        if (res.type === "done") { done = true; return; }
-        shipment.set(res.shipment as unknown as ShipmentTemplate);
-        stepIdx.set(Math.max(0, visible.indexOf(res.step)));
+        void (async () => {
+            const res = await advance(stepsAll, $shipment as any, meta, 0);
+            if (res.type === "done") { done = true; return; }
+            shipment.set(res.shipment as unknown as ShipmentTemplate);
+            stepIdx.set(Math.max(0, visible.indexOf(res.step)));
+        })();
+        // v1-gedrag: rates worden reactief op de achtergrond opgehaald zodra
+        // adressen+pakketten compleet zijn (readiness-suite uit de fabriek-emit).
+        const stop = autoFetchRates(shipment as any, fieldValidity, 800, provider.readiness) as unknown;
+        return () => {
+            if (typeof stop === "function") (stop as () => void)();
+        };
     });
+
+    function gotoProducts() {
+        const i = visible.findIndex((s) => s.id === "products");
+        if (i >= 0) { showAllErrors.set(false); stepIdx.set(i); }
+    }
 
     async function next() {
         const step = visible[$stepIdx];
@@ -123,7 +138,12 @@
         {:else if currentStep?.id === "products"}
             <ProductStepBlock order={null} {provider} {shipment} {userId} />
         {:else if currentStep?.id === "ship"}
-            <ShipRatesInterim {shipment} />
+            <ShipStepBlock
+                {provider}
+                {shipment}
+                {userId}
+                on:gotoproducts={gotoProducts}
+            />
         {:else if currentStep}
             <!-- Volgende slices: Receiver/PackageTable/Product/Ship step-blocks porten. -->
             <div class="placeholder">
