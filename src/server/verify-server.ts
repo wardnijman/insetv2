@@ -63,7 +63,21 @@ check("regio's: US bevat California→CA", us.some((r) => r.value === "CA" && r.
 const parse = await fetch(`${base}/api/ai/parse-address`, { method: "POST", body: "{}" });
 check("parse-address: 503 ai_not_configured (v1-contract)", parse.status === 503);
 
-// 5) onbekende tenant faalt gesloten
+// 5) product-profielen: learn (per-veld merge) → get
+await fetch(`${base}/api/product-profiles/learn`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u1", products: [{ sku: "SKU-9", hsCode: "490199", value: 25, weight: 0.8, originCountry: "NL" }] }),
+});
+await fetch(`${base}/api/product-profiles/learn`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u1", products: [{ sku: "SKU-9", value: 30 }] }), // deeldata
+});
+const profiles = (await (await fetch(`${base}/api/product-profiles/get?userId=u1`)).json()) as any;
+check("product-profielen: per-veld merge (deeldata wist hsCode niet)", profiles["SKU-9"]?.hsCode === "490199" && profiles["SKU-9"]?.value === 30);
+
+// 6) onbekende tenant faalt gesloten
 const bad = await fetch(`http://127.0.0.1:${port}/t/bestaat-niet/api/rates`, { method: "POST", body: "{}" });
 check("onbekende tenant → 404", bad.status === 404);
 

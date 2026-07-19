@@ -175,6 +175,43 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return json(res, 503, { ok: false, error: "ai_not_configured" });
     }
 
+    if ((route === "/api/ai/suggest-hs" || route === "/api/ai/search-hs") && req.method === "POST") {
+      // Interim: HS-suggestie (LLM) nog niet bedraad — zelfde 503-contract; de
+      // HS-input degradeert naar handmatig invullen (v1 is daar al fail-soft op).
+      return json(res, 503, { ok: false, error: "ai_not_configured" });
+    }
+
+    if (route === "/api/product-profiles/get" && req.method === "GET") {
+      // Per-SKU productgeheugen (HS/waarde/gewicht/herkomst uit eerdere boekingen).
+      // Opslag in de per-tenant prefs onder "productProfiles" — zelfde DB als config.
+      const userId = url.searchParams.get("userId") ?? "";
+      const prefs = getPrefs(tenantId, userId);
+      return json(res, 200, (prefs.productProfiles as Record<string, unknown>) ?? {});
+    }
+
+    if (route === "/api/product-profiles/learn" && req.method === "POST") {
+      // v1-contract: body = { userId, products: ProductTemplate[] }; de server leidt
+      // per-SKU profielen af en merget PER VELD — deeldata wist nooit een eerder
+      // geleerde waarde.
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const userId = String(body.userId ?? "");
+      const prefs = getPrefs(tenantId, userId);
+      const profiles = (prefs.productProfiles as Record<string, Record<string, unknown>>) ?? {};
+      for (const p of (body.products ?? []) as Record<string, unknown>[]) {
+        const sku = String(p.sku ?? "");
+        if (!sku) continue;
+        const prof = profiles[sku] ?? {};
+        if (typeof p.hsCode === "string" && p.hsCode.trim()) prof.hsCode = p.hsCode;
+        if (Number(p.value) > 0) prof.value = Number(p.value);
+        if (Number(p.weight) > 0) prof.weight = Number(p.weight);
+        if (typeof p.originCountry === "string" && p.originCountry.trim()) prof.originCountry = p.originCountry;
+        profiles[sku] = prof;
+      }
+      prefs.productProfiles = profiles;
+      setPrefs(tenantId, userId, prefs);
+      return json(res, 200, { ok: true });
+    }
+
     return json(res, 404, { error: "unknown_route" });
   } catch (e) {
     return json(res, 500, { error: (e as Error).message });

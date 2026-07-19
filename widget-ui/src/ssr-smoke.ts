@@ -58,6 +58,25 @@ const pkg = render(PackageTableStepBlock, {
 check('packages: sectie + tabelkop ("Verpakkingen", "Afmetingen")', pkg.body.includes("Verpakkingen") && pkg.body.includes("Afmetingen"));
 check('packages: regel-toevoegen-actie', pkg.body.includes("Regel toevoegen"));
 
+// Douanestap: ProductStepBlock → SkeletonContainer (grid) met een non-EU-zending +
+// één product; grid-chrome en productvelden moeten uit de catalogus/provider komen.
+const prodMod = await import("./lib/components/ProductStepBlock.svelte");
+const customsShipment = writable({
+  shipperAddress: { ...emptyAddress(), country: "NL" },
+  recipientAddress: { ...emptyAddress(), country: "US" },
+  packages: [],
+  products: [{
+    sku: "SKU-1", name: "Boek", description: "Boek over schepen", hsCode: "490199",
+    value: 25, weight: 0.8, originCountry: "NL", quantity: 2, category: "Products",
+    send: true, materials: [], currency: "EUR", createdAt: "", updatedAt: "",
+  }],
+} as unknown as ShipmentTemplate);
+const customs = render(prodMod.default, {
+  props: { order: null, shipment: customsShipment, userId: "smoke", provider },
+});
+check("customs: grid rendert het product", customs.body.includes("Boek over schepen") || customs.body.includes("SKU-1") || customs.body.includes("490199"));
+check("customs: HS/douane-chrome aanwezig", /HS|Douane|douane/.test(customs.body));
+
 // Interim verzendstap (rates via proxy; onMount-fetch draait niet in SSR → laadstaat).
 const shipMod = await import("./lib/components/ShipRatesInterim.svelte");
 const ship = render(shipMod.default, { props: { shipment: recShipment } });
