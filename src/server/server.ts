@@ -369,6 +369,14 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       });
     }
 
+    if (route === "/api/orders" && req.method === "GET") {
+      // Orderbron van de OrderOverview (order-overview-slice). Interim: de webshop-
+      // sync (Exact/Shopify/…) is nog niet bedraad in v2 — lege lijst laat de widget
+      // netjes de lege-staat tonen. userId/q/tokens komen al mee als query-params
+      // zodat de echte implementatie zonder client-wijziging kan filteren.
+      return json(res, 200, []);
+    }
+
     if (route === "/api/service-points" && req.method === "GET") {
       // Interim: access points komen later via het portaal; lege lijst degradeert
       // de AccessPointSelector netjes ("geen access points beschikbaar").

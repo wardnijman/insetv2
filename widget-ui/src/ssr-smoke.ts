@@ -85,6 +85,19 @@ const ship = render(shipMod.default, {
 });
 check("ship: rendert zonder crash met chrome", ship.body.length > 200 && /[Vv]erzend/.test(ship.body));
 
+// Widget-ROOT (order-overview-slice): overview-chrome moet zichtbaar zijn zonder
+// browser-API's — zoekbalk-placeholder, de "Handmatig"-knop (createShipment-key),
+// lege-staat-tekst en de bulk-balk. Orders komen client-side (fetch in $effect draait
+// niet op SSR), dus de lege staat is de verwachte render.
+const widgetMod = await import("./lib/components/Widget.svelte");
+const widget = render(widgetMod.default, {
+  props: { tenant, provider, hostNotice: null, userId: "smoke" },
+});
+check('widget-root: zoekbalk rendert (placeholder "Zoek…")', widget.body.includes("Zoek…"));
+check('widget-root: "Handmatig"-knop uit de catalogus (createShipment)', widget.body.includes("Handmatig"));
+check('widget-root: lege-staat uit de catalogus ("Geen bestellingen gevonden")', widget.body.includes("Geen bestellingen gevonden"));
+check('widget-root: bulk-balk + basket-footer ("Selecteer orders", "Printen")', widget.body.includes("Selecteer orders") && widget.body.includes("Printen"));
+
 if (fail) {
   console.error(`SSR-smoke FAALT (${fail})`);
   process.exit(1);

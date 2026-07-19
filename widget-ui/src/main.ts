@@ -2,10 +2,14 @@
 // tenant-config → host-adapter (resolveMount, hier met de ECHTE DOM als HostEnv) →
 // provider-registry → mount. Verschil met de node-kant: tenant-config komt gebundeld
 // binnen (vite JSON-import) i.p.v. via node:fs.
+//
+// Sinds de order-overview-slice mount dit de Widget-ROOT (orderlijst + wizard-wissel);
+// WizardShell wordt door OrderOverview inline geopend. hostNotice=null (standalone);
+// cachedOrders komt in embedded modus van de host-adapter — hier niet.
 
 import "./app.css";
 import { mount } from "svelte";
-import WizardShell from "./lib/WizardShell.svelte";
+import Widget from "./lib/components/Widget.svelte";
 import devTenant from "../../tenants/dev-standalone.json";
 import type { TenantConfig } from "../../src/widget/tenant.ts";
 import { resolveHost, resolveMount } from "../../src/widget/host-adapter.ts";
@@ -32,4 +36,7 @@ setLang("NL");
 const target = resolveMount(resolveHost(tenant), env) as unknown as HTMLElement;
 const provider = getWidgetProvider(tenant.providers[0]);
 
-mount(WizardShell, { target, props: { tenant, provider, userId: tenant.id } });
+mount(Widget, {
+  target,
+  props: { tenant, provider, hostNotice: null, userId: tenant.id },
+});
