@@ -26,6 +26,10 @@ export function tenantDb(tenant: string): DatabaseSync {
         traceId TEXT PRIMARY KEY, portal TEXT, flow TEXT,
         status TEXT, error TEXT, durationMs INTEGER, at TEXT
       );
+      CREATE TABLE IF NOT EXISTS mails (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        shipmentRef TEXT, email TEXT, types TEXT, status TEXT, at TEXT
+      );
     `);
     cache.set(tenant, db);
   }
@@ -55,6 +59,18 @@ export function recordTrace(tenant: string, t: { traceId: string; portal: string
 
 export function listShipments(tenant: string): Record<string, unknown>[] {
   return tenantDb(tenant).prepare("SELECT * FROM shipments ORDER BY id DESC").all() as Record<string, unknown>[];
+}
+
+/** Mail-OUTBOX (audit van de mail-finalisatie na boeken; verzending loopt via de
+ *  portaal-flow — de outbox maakt het per tenant navraagbaar). */
+export function recordMail(tenant: string, m: { shipmentRef: string; email: string; types: string[]; status: "sent-to-portal" | "skipped" | "error" }): void {
+  tenantDb(tenant)
+    .prepare("INSERT INTO mails (shipmentRef, email, types, status, at) VALUES (?,?,?,?,?)")
+    .run(m.shipmentRef, m.email, m.types.join(","), m.status, new Date().toISOString());
+}
+
+export function listMails(tenant: string): Record<string, unknown>[] {
+  return tenantDb(tenant).prepare("SELECT * FROM mails ORDER BY id DESC").all() as Record<string, unknown>[];
 }
 
 /** "Laat de laatste mislukte zending van klant X zien" (R3.1) — één SQL-query. */

@@ -3,11 +3,10 @@
     // - fieldValidators + domain komen uit de provider-PARAMETER (WidgetProviderLayer)
     //   i.p.v. de hardcoded generated imports (steps/getRatesValidate, steps/domain.json).
     // - apiBaseUrl komt uit api/global, dat bij boot uit de tenant host-config gezet wordt.
-    // - InputWithRecall (bedrijfspresets, vergt backend + toast) volgt in een latere
-    //   slice; interim een ValidatedInput zodat het veld + validatie er al staan.
     import type { ShipmentTemplate } from "../types/config";
     import type { WidgetProviderLayer } from "../providers/types";
     import ValidatedInput from "./inputs/ValidatedInput.svelte";
+    import InputWithRecall from "./inputs/InputWithRecall.svelte";
     import {
         countriesRequiringRegion,
         getCountryOptions,
@@ -18,10 +17,12 @@
     import { writable } from "svelte/store";
     import { currentLang, m } from "../state/messageStore";
     import { apiBaseUrl } from "../api/global";
+    import { toast } from "./toast/toast";
     import StepSection from "./wizard/StepSection.svelte";
 
     export let provider: WidgetProviderLayer;
     export let shipment: Writable<ShipmentTemplate>;
+    export let userId: string = "";
 
     const countryOptions = getCountryOptions(
         provider.domain.countries,
@@ -49,6 +50,24 @@
         fetchRegionOptions(currentCountry);
     }
 
+    function resetShipperFields() {
+        shipment.update((s) => {
+            s.shipperAddress = {
+                company: "",
+                firstName: "",
+                lastName: "",
+                email: "",
+                street: ["", ""],
+                postalCode: "",
+                city: "",
+                country: "",
+                phoneNumber: "",
+                region: "",
+            };
+            return s;
+        });
+    }
+
     async function fetchRegionOptions(country: string) {
         try {
             const res = await fetch(
@@ -73,14 +92,26 @@
     <StepSection label={m.shipmentWizard.senderStep.senderStepLabel}>
         <div class="grid gap-x-5 gap-y-5 md:grid-cols-[1.2fr_1fr_1fr]">
             <div>
-                <label class="mb-1 block text-xs text-gray-500"
-                    >{m.shipmentWizard.senderStep.companyLabel}</label
-                >
-                <ValidatedInput
+                <InputWithRecall
+                    {userId}
+                    label={m.shipmentWizard.senderStep.companyLabel}
+                    typeKey="shipperAddress"
                     name="shipperAddress_company"
-                    bind:value={$shipment.shipperAddress!.company}
-                    shipmentTemplate={$shipment}
-                    validator={mergedFieldValidators["shipperAddress_company"]}
+                    bind:bindValue={$shipment.shipperAddress!.company}
+                    bindObject={$shipment.shipperAddress}
+                    onReset={resetShipperFields}
+                    emptyTemplate={{
+                        company: "",
+                        firstName: "",
+                        lastName: "",
+                        email: "",
+                        street: ["", ""],
+                        postalCode: "",
+                        city: "",
+                        region: "",
+                        country: "",
+                        phoneNumber: "",
+                    }}
                 />
             </div>
             <div>

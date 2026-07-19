@@ -158,7 +158,7 @@
         {#if done}
             <div class="placeholder">Klaar — alle stappen doorlopen.</div>
         {:else if currentStep?.id === "sender"}
-            <SenderStepBlock {provider} {shipment} />
+            <SenderStepBlock {provider} {shipment} {userId} />
         {:else if currentStep?.id === "receiver"}
             <ReceiverStepBlock {provider} {shipment} {userId} />
         {:else if currentStep?.id === "packages"}

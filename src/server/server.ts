@@ -15,7 +15,7 @@ import { SessionPool } from "../runtime/pool.ts";
 import { loadAdapter, runFlow } from "../runtime/execute.ts";
 import { assertBookable } from "../runtime/capabilities.ts";
 import { startRun, record, finishRun } from "../observability/trace.ts";
-import { tenantDb, recordShipment } from "../db/tenant-db.ts";
+import { tenantDb, recordShipment, recordMail } from "../db/tenant-db.ts";
 import { US_STATES, CA_PROVINCES } from "./regions.ts";
 
 interface TenantConfig {
@@ -257,14 +257,44 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       const input = { ...shipment, source: shipment.source ?? "manual", customsDocuments: shipment.customsDocuments ?? [] };
       const result = await runPrebuilt(pool, tenantId, portal, `submitShipment${formId}`, buildSubmitPayload(formId, input));
 
-      recordShipment(tenantId, {
-        portal, carrier, service,
-        shipmentRef: String(result?.zendingnummer ?? result?.shipmentRef ?? ""),
-        status: "ok",
-      });
-      // TODO(mail-finalisatie): tracking-/bevestigingsmails verhuisden van client naar
-      // hier — bedraden zodra de mail-infra er is.
-      return json(res, 200, { ok: true, carrier, service, ...result });
+      const shipmentRef = String(result?.zendingnummer ?? result?.shipmentRef ?? "");
+      recordShipment(tenantId, { portal, carrier, service, shipmentRef, status: "ok" });
+
+      // MAIL-FINALISATIE (v1-clientlogica, nu serverside): tracking-/bevestigings-
+      // mails via TFF's /api/email/ — een portaal-flow door de pool. Fail-soft:
+      // een mailfout mag de (al gelukte) boeking nooit laten falen. Outbox in de
+      // tenant-DB maakt het navraagbaar.
+      const userId = String(body.userId ?? "");
+      let mailStatus: "sent-to-portal" | "skipped" | "error" = "skipped";
+      try {
+        const prefs = getPrefs(tenantId, userId);
+        const trackingMail = (prefs as any).trackingMailEnabled ?? true;
+        const confirmationMail = (prefs as any).labelConfirmationMailEnabled ?? true;
+        const email = String(shipment.recipientAddress?.email ?? "");
+        const types = [...(trackingMail ? ["tracking"] : []), ...(confirmationMail ? ["confirmation", "labels"] : [])];
+        if ((trackingMail || confirmationMail) && email) {
+          const rows = [{
+            shipment_id: shipmentRef,
+            email,
+            shipmentDetails: confirmationMail,
+            shipmentTracking: trackingMail,
+            shipmentConfirmation: confirmationMail,
+            shipmentLabels: confirmationMail,
+            language: (prefs as any).language ?? "NL",
+            pageId: "",
+            i: 0,
+          }];
+          await runPrebuilt(pool, tenantId, portal, "finalizeShipment", { rows, extCustomerId: userId, sessionkey: "" });
+          mailStatus = "sent-to-portal";
+        }
+        recordMail(tenantId, { shipmentRef, email, types, status: mailStatus });
+      } catch (e) {
+        mailStatus = "error";
+        recordMail(tenantId, { shipmentRef, email: String(shipment.recipientAddress?.email ?? ""), types: [], status: "error" });
+        console.warn(`mail-finalisatie faalde (boeking staat): ${(e as Error).message}`);
+      }
+
+      return json(res, 200, { ok: true, carrier, service, mailFinalization: mailStatus, ...result });
     }
 
     if (route === "/api/service-points" && req.method === "GET") {

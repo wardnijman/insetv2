@@ -103,6 +103,8 @@ export async function submitShipmentByType(
       shipment: $s,
       fingerprint,
       chosenRate,
+      // Voor de serverside mail-finalisatie (prefs-lookup per gebruiker).
+      userId: String(extCustomerId ?? ""),
     }),
   });
 

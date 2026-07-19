@@ -37,6 +37,11 @@ function mockSubmit(session: Session, flow: string, payload: Record<string, unkn
       body: { ok: true, sessionKey: `srk-${payload["srk"] ?? "1"}`, accessPoints: [], paperlessAvailable: false },
     };
   }
+  if (flow === "finalizeShipment") {
+    // Echte TFF: POST /api/email/ per rij (tracking/bevestigingsmails); mock bevestigt.
+    const rows = (payload["rows"] as unknown[]) ?? [];
+    return { status: 200, loggedOut: false, body: { ok: true, finalized: rows.length } };
+  }
   if (flow.startsWith("submitShipment")) {
     mockShipmentSeq += 1;
     return {

@@ -95,6 +95,7 @@ check("choose: sessionKey uit het portaal", typeof chosen.sessionKey === "string
 const bookShipment = {
   source: "manual",
   ...shipment,
+  recipientAddress: { ...shipment.recipientAddress, email: "klant@example.com", firstName: "Franz", lastName: "Meier", phoneNumber: "+4930123" },
   invoice: {},
   customsDocuments: [],
   products: [],
@@ -108,10 +109,26 @@ const bookShipment = {
 const booked = await fetch(`${base}/api/book`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ shipment: bookShipment, fingerprint: "-1100307470", chosenRate: dpd }),
+  body: JSON.stringify({ shipment: bookShipment, fingerprint: "-1100307470", chosenRate: dpd, userId: "u1" }),
 });
 const bookedBody = (await booked.json()) as any;
 check("book: 200 + zendingnummer uit het (mock-)portaal", booked.status === 200 && /^\d+$/.test(String(bookedBody.zendingnummer ?? "")));
+check("book: mail-finalisatie naar portaal (defaults aan)", bookedBody.mailFinalization === "sent-to-portal");
+
+// mail-voorkeuren UIT → finalisatie wordt geskipt (v1's flags, nu serverside)
+await fetch(`${base}/api/config/update`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u2", update: { trackingMailEnabled: false, labelConfirmationMailEnabled: false } }),
+});
+const bookedNoMail = (await (
+  await fetch(`${base}/api/book`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shipment: bookShipment, fingerprint: "-1100307470", chosenRate: dpd, userId: "u2" }),
+  })
+).json()) as any;
+check("book: mail-finalisatie geskipt bij uitgezette voorkeuren", bookedNoMail.mailFinalization === "skipped");
 
 // capability-guard: express-service moet GEBLOKKEERD worden (Wards boek-beleid, R1.3)
 const dhl = (rates.rates as any[]).find((r) => r.carrier === "DHL");
