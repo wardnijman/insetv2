@@ -7,6 +7,7 @@
     fieldValidity,
     clearFieldValidityKey,
     showAllErrors,
+    revealedFields,
   } from "../../state/formValidation";
 
   export let name: string;
@@ -35,7 +36,7 @@
   // showAllErrors flag (user pressed Verder on an invalid step). Validity
   // itself is tracked from mount so step gating keeps working.
   let touched = false;
-  $: showInvalid = !result.valid && !suppressInvalid && (touched || $showAllErrors);
+  $: showInvalid = !result.valid && !suppressInvalid && (touched || $showAllErrors || $revealedFields.has(name));
 
   let lastDepKey = "";
   let lastValue: any = undefined;

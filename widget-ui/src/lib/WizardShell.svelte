@@ -22,9 +22,9 @@
     //   startStep/initialShipment — komen met de OrderOverview-slice.
     // - TODO(order-flow): draft-persistentie (state/shipDraft + state/shipEdits) —
     //   die modules zijn nog niet geport.
-    // - TODO(reveal-per-field): v1's revealField/resetRevealedFields (per-veld
-    //   foutonthulling na autofocus) — v2's formValidation/inputs dragen de
-    //   revealedFields-store (nog) niet.
+    // - reveal-per-field: v1's revealField/resetRevealedFields (gerichte foutonthulling
+    //   op het veld waar we naartoe focussen) is geport — revealedFields-store in
+    //   formValidation, gebruikt door ValidatedInput/ValidatedSelect.
     // - v1's <head>-Google-font-link (Material Symbols): niets in v2 gebruikt die font.
     import { onMount, onDestroy, tick, createEventDispatcher } from "svelte";
     import { writable, get } from "svelte/store";
@@ -38,6 +38,8 @@
         fieldValidity,
         resetFieldValidity,
         showAllErrors,
+        revealField,
+        resetRevealedFields,
     } from "./state/formValidation";
     import { m } from "./state/messageStore";
     import { userPreferences } from "./state/userPreferences";
@@ -297,9 +299,10 @@
                 if (!bad) return retry();
                 // Nooit scrollen: de stappen passen in de viewport.
                 bad.focus({ preventScroll: true });
-                // TODO(reveal-per-field): v1 onthulde hier de foutmelding van een
-                // gevuld-maar-invalid veld (revealField) — de revealedFields-store
-                // is nog niet geport naar v2's formValidation/inputs.
+                // v1-gedrag: onthul gericht de foutmelding van dit ene (gevuld-maar-
+                // invalide) veld waar we naartoe focussen — zonder de hele stap rood
+                // te maken. De revealedFields-store stuurt showInvalid in de inputs.
+                if (bad.name) revealField(bad.name);
             } catch {
                 // Best-effort: focus-comfort mag nooit de wizard breken.
             }
@@ -315,6 +318,7 @@
     $: if (currentStep?.id !== lastErrResetStepId) {
         lastErrResetStepId = currentStep?.id;
         showAllErrors.set(false);
+        resetRevealedFields();
         focusFirstInvalidField();
     }
 

@@ -8,6 +8,19 @@ export const fieldValidity = writable<Record<string, boolean>>({});
 // Reset on step change so the next step opens clean.
 export const showAllErrors = writable(false);
 
+// Per-veld foutonthulling (geport uit v1): naast blur/showAllErrors kan een veld
+// gericht "onthuld" worden (bv. een net geautofocust veld dat al ongeldig is, of het
+// eerste foute veld waar de wizard naartoe scrollt). Reset bij stapwissel.
+export const revealedFields = writable<Set<string>>(new Set());
+
+export function revealField(name: string) {
+  revealedFields.update((s) => (s.has(name) ? s : new Set(s).add(name)));
+}
+
+export function resetRevealedFields() {
+  revealedFields.set(new Set());
+}
+
 export function resetFieldValidity() {
   fieldValidity.set({});
 }

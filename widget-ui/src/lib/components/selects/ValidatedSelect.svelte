@@ -4,6 +4,7 @@
     fieldValidity,
     clearFieldValidityKey,
     showAllErrors,
+    revealedFields,
   } from "../../state/formValidation";
   import type { ShipmentTemplate, ValidationResult } from "../../types/config";
 
@@ -23,7 +24,7 @@
 
   // Error styling gated on touched/showAllErrors — see ValidatedInput.
   let touched = false;
-  $: showInvalid = !result.valid && (touched || $showAllErrors);
+  $: showInvalid = !result.valid && (touched || $showAllErrors || $revealedFields.has(name));
 
   // Drop this field's validity entry when it unmounts — see ValidatedInput for why a stale
   // `false` would otherwise keep the submit button disabled after the field is hidden.
