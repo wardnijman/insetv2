@@ -174,8 +174,26 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       const body = JSON.parse((await readBody(req)) || "{}");
       const portal = tenant.providers[0];
       const pool = await getPool(portal);
-      const result = await runFlow(pool, tenantId, portal, "getRates", toFlowInput(body.shipment ?? {}));
-      return json(res, 200, result);
+      const shipment = body.shipment ?? {};
+
+      let raw: any;
+      if ((process.env.INSET_ADAPTER ?? "mock") === "live") {
+        // Live: de volledige wizard-velden-transform van de live adapter (de
+        // generated getRates-transform is de compacte demo-subset).
+        const mod = await import(`../../portals/${portal}/adapter-live.ts`);
+        const input = {
+          ...shipment,
+          shipmentOptions: {
+            ...(shipment.shipmentOptions ?? {}),
+            truckShipmentInfo: shipment.shipmentOptions?.truckShipmentInfo ?? {},
+          },
+        };
+        raw = await runPrebuilt(pool, tenantId, portal, "getRates", mod.transformGetRatesInput(input));
+      } else {
+        raw = await runFlow(pool, tenantId, portal, "getRates", toFlowInput(shipment));
+      }
+      // Normaliseer: mock geeft {rates}, live geeft {result, reason}.
+      return json(res, 200, { rates: raw?.rates ?? raw?.result ?? [], ...(raw?.reason ? { reason: raw.reason } : {}) });
     }
 
     if (route === "/api/config/get" && req.method === "POST") {

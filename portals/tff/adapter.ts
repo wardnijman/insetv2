@@ -29,8 +29,13 @@ function mockSubmit(session: Session, flow: string, payload: Record<string, unkn
   if (!validSessions.has(session.id)) return { status: 302, loggedOut: true, body: "redirect -> /login" };
 
   if (flow === "chooseOption") {
-    // Echte TFF geeft na chooseOption een submit-sessie; de srk komt uit de rate.
-    return { status: 200, loggedOut: false, body: { ok: true, sessionKey: `srk-${payload["srk"] ?? "1"}` } };
+    // Echte TFF geeft na chooseOption een submit-sessie + lane-info (access points,
+    // paperless-beschikbaarheid); de widget patcht die op de gekozen rate (v1-pad).
+    return {
+      status: 200,
+      loggedOut: false,
+      body: { ok: true, sessionKey: `srk-${payload["srk"] ?? "1"}`, accessPoints: [], paperlessAvailable: false },
+    };
   }
   if (flow.startsWith("submitShipment")) {
     mockShipmentSeq += 1;

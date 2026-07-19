@@ -6,8 +6,10 @@
   //   v1-gedragspad met een echte server-sessionKey; kale rates (mock/dev) ronden af
   //   met een "proxy:"-placeholder zodat de "chooseOption heeft plaatsgevonden"-gates
   //   (sessionKeyReadyValidator) passeren. paperlessKnown filtert die placeholder uit
-  //   (paperless blijft onbekend → geen melding); access points patcht de route (nog)
-  //   niet (AccessPointSelector's bestaande "geen afhaalpunten"-pad).
+  //   (paperless blijft onbekend → geen melding). Draagt de respons accessPoints/
+  //   paperlessAvailable, dan patchen we die op v1's doelvelden (shipmentOptions.
+  //   chosenRate.accessPoints / shipmentOptions.paperlessAvailable); ontbreken ze,
+  //   dan blijft de bestaande degradatie ("geen afhaalpunten", paperless onbekend).
   //   Zie TODO(proxy-chooseOption-kale-rates).
   // - Generated-imports omgelegd naar de provider-laag: steps/widgetFieldsMatrix.json →
   //   provider.submit.widgetFieldsMatrix; steps/fingerprintMatrix.json →
@@ -466,16 +468,18 @@
 
     try {
       let sessionKey: string;
+      let chooseResult: import("../api/chooseOption").ChooseOptionResult | null = null;
 
       if (rate?.reusableData) {
         // v1-gedragspad: echte chooseOption, nu via de proxy (POST /api/choose;
         // v1 deed dit browser→TFF via `import("../api/chooseOption")`). De server
-        // draait het portaalpad op zijn eigen sessie en retourneert de sessionKey.
+        // draait het portaalpad op zijn eigen sessie en retourneert de sessionKey
+        // en — als de final page ze toont — accessPoints/paperlessAvailable.
         // Fouten vallen in het bestaande catch-pad (__chooseOptionError + lege
         // sessionKey → sessionKeyReadyValidator blokkeert submit).
         const { chooseOption } = await import("../api/chooseOption");
-        const result = await chooseOption(rate);
-        sessionKey = String(result?.sessionKey ?? "").trim();
+        chooseResult = await chooseOption(rate);
+        sessionKey = String(chooseResult?.sessionKey ?? "").trim();
       } else {
         // TODO(proxy-chooseOption-kale-rates): de /api/choose-route bestaat nu, maar
         // kale rates (zonder reusableData, mock/dev-proxy) dragen niet de portaal-
@@ -502,12 +506,34 @@
             "No sessionKey found after chooseOption";
         }
 
+        // v1-pariteit (chooseOptionAndPatchShipment → applyPatch met dotted paths):
+        // de respons kan ook accessPoints ("shipmentOptions.chosenRate.accessPoints")
+        // en paperlessAvailable ("shipmentOptions.paperlessAvailable") dragen — v1
+        // zette accessPoints alleen als de final page een access-point-rij had.
+        // Alleen patchen als het veld in de respons zit; anders ongemoeid laten zodat
+        // de bestaande degradatie (lege access points / paperless onbekend) blijft.
+        // NB: dit is puur het signaal-veld — de PLT-attach-gating (needsCustoms,
+        // PLT-domestic-bugles) leeft downstream en blijft hier onaangeraakt.
+        if (chooseResult && Array.isArray(chooseResult.accessPoints)) {
+          if (!(s.shipmentOptions as any).chosenRate) {
+            (s.shipmentOptions as any).chosenRate = {} as any;
+          }
+          (s.shipmentOptions as any).chosenRate.accessPoints =
+            chooseResult.accessPoints;
+        }
+        if (chooseResult && typeof chooseResult.paperlessAvailable === "boolean") {
+          (s.shipmentOptions as any).paperlessAvailable =
+            chooseResult.paperlessAvailable;
+        }
+
         return s;
       });
 
       console.log("[ShipStepBlock] chooseOption done", {
         viaProxyRoute: !!rate?.reusableData,
         finalSessionKey: sessionKey,
+        accessPoints: chooseResult?.accessPoints?.length,
+        paperlessAvailable: chooseResult?.paperlessAvailable,
       });
     } catch (err: any) {
       if (seq !== chooseOptionSeq) return;

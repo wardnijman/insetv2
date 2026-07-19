@@ -14,6 +14,12 @@ export async function loadTransform(portal: string, flow: string): Promise<Trans
 }
 
 export async function loadAdapter(portal: string): Promise<PortalAuthAdapter> {
+  // INSET_ADAPTER=live -> de echte portaal-adapter (adapter-live.ts, read-only;
+  // creds uit env/.env). Default mock: CI/offline harnas raakt nooit een portaal.
+  if ((process.env.INSET_ADAPTER ?? "mock") === "live") {
+    const mod = await import(`../../portals/${portal}/adapter-live.ts`);
+    return (mod.adapterLive ?? mod.adapter) as PortalAuthAdapter;
+  }
   const mod = await import(`../../portals/${portal}/adapter.ts`);
   return mod.adapter as PortalAuthAdapter;
 }
