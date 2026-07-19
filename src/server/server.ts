@@ -17,6 +17,11 @@ import { assertBookable } from "../runtime/capabilities.ts";
 import { startRun, record, finishRun } from "../observability/trace.ts";
 import { tenantDb, recordShipment, recordMail } from "../db/tenant-db.ts";
 import { US_STATES, CA_PROVINCES } from "./regions.ts";
+import {
+  buildPaperlessInvoiceRequestFromShipment,
+  buildTffInvoicePhpPayload,
+  type ShipmentCreateRequest_WithPaperlessInvoice,
+} from "../widget/paperless-mapper.ts";
 
 interface TenantConfig {
   id: string;
@@ -295,6 +300,73 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       }
 
       return json(res, 200, { ok: true, carrier, service, mailFinalization: mailStatus, ...result });
+    }
+
+    if (route === "/api/paperless/generate" && req.method === "POST") {
+      // PAPERLESS-FACTUUR (PLT), proxy-first. v1-keten (fase-1-recon): (1) POST naar de
+      // aparte pdf-service pdf.tffxpress.com/pdf/invoice.php (sessieloos) -> base64-PDF;
+      // (2) attach = ajax/invoiceTransferPDF.php?id=<sessionkey> + ajax/set_invoice_plt.php
+      // (plt=1), beide MÉT portaal-cookie — precies waarom dit hier door de pool loopt
+      // i.p.v. browser-side zoals v1. De request-vorm komt uit de oracle-bewaakte mapper:
+      // de widget stuurt `req` (zelf gebouwd met dezelfde mapper), of `shipment` en dan
+      // mappen wij 'm hier — één bron, twee ingangen.
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const portal = tenant.providers[0];
+
+      let pltReq: ShipmentCreateRequest_WithPaperlessInvoice;
+      try {
+        pltReq =
+          body.req ??
+          buildPaperlessInvoiceRequestFromShipment(body.shipment ?? {}, {
+            includeRecipientNameInCompany: Boolean(body.includeRecipientNameInCompany),
+          });
+      } catch (e) {
+        // Mapper faalt gesloten (v1: "Missing paperlessInvoice fields.") -> 422.
+        return json(res, 422, { error: "paperless_invalid", message: (e as Error).message });
+      }
+      const sessionkey = String(body.sessionkey ?? "");
+      const customerId = body.customerId ?? body.userId ?? "";
+      if (!sessionkey || String(customerId) === "") {
+        return json(res, 422, { error: "paperless_invalid", message: "sessionkey en customerId zijn verplicht." });
+      }
+
+      const phpPayload = buildTffInvoicePhpPayload({
+        req: pltReq,
+        customerId,
+        sessionkey,
+        carrier: body.carrier,
+        serviceDescription: body.serviceDescription,
+      });
+      const pool = await getPool(portal);
+      // TODO(live): adapter-live encodeert phpPayload met encodeInvoicePhpBody en POST
+      // naar INVOICE_PHP_URL; de mock geeft direct een geldige base64-PDF terug.
+      const pdfResp = await runPrebuilt(pool, tenantId, portal, "paperlessInvoice", phpPayload);
+      const pdfBase64 = String(pdfResp?.pdfBase64 ?? "");
+      if (!pdfBase64.startsWith("JVBER")) {
+        // v1-contract: invoice.php levert base64-PDF ("JVBER" = "%PDF") of het is mis.
+        return json(res, 502, {
+          error: "paperless_pdf_invalid",
+          message: `Onverwacht PDF-antwoord (begint met: ${pdfBase64.slice(0, 40)})`,
+        });
+      }
+
+      if (body.attach) {
+        // v1's pltPdfData was de JSON-gequote base64 (capture: pltPdfData="%22JVBER...%22").
+        await runPrebuilt(pool, tenantId, portal, "paperlessInvoiceAttach", {
+          sessionkey,
+          pltPdfData: JSON.stringify(pdfBase64),
+          plt: 1,
+        });
+      }
+
+      const filename = String(body.filename ?? `commercial-invoice-${sessionkey}.pdf`);
+      // contentType is LOAD-BEARING op het invoice-slot: transforms droppen een file
+      // zonder contentType stil (v1-les).
+      return json(res, 200, {
+        invoice: { base64: pdfBase64, filename, contentType: "application/pdf" },
+        url: `data:application/pdf;base64,${pdfBase64}`,
+        attached: Boolean(body.attach),
+      });
     }
 
     if (route === "/api/service-points" && req.method === "GET") {

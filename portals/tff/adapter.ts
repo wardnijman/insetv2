@@ -25,6 +25,27 @@ function mockLogin(): Session {
 
 let mockShipmentSeq = 80000000;
 
+// Minimale maar GELDIGE PDF ("%PDF-1.4", 1 lege A4-pagina, kloppende xref-offsets) —
+// als base64 opgeleverd zoals de echte pdf-service dat doet ("JVBER..." = "%PDF").
+function buildMockPdf(): string {
+  const objs = [
+    "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n",
+    "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n",
+    "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] >>\nendobj\n",
+  ];
+  let pdf = "%PDF-1.4\n";
+  const offsets: number[] = [];
+  for (const o of objs) {
+    offsets.push(pdf.length);
+    pdf += o;
+  }
+  const xref = pdf.length;
+  pdf += `xref\n0 4\n0000000000 65535 f \n${offsets.map((o) => `${String(o).padStart(10, "0")} 00000 n \n`).join("")}`;
+  pdf += `trailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return pdf;
+}
+const MOCK_PDF_BASE64 = Buffer.from(buildMockPdf(), "latin1").toString("base64");
+
 function mockSubmit(session: Session, flow: string, payload: Record<string, unknown>): PortalResponse {
   if (!validSessions.has(session.id)) return { status: 302, loggedOut: true, body: "redirect -> /login" };
 
@@ -41,6 +62,22 @@ function mockSubmit(session: Session, flow: string, payload: Record<string, unkn
     // Echte TFF: POST /api/email/ per rij (tracking/bevestigingsmails); mock bevestigt.
     const rows = (payload["rows"] as unknown[]) ?? [];
     return { status: 200, loggedOut: false, body: { ok: true, finalized: rows.length } };
+  }
+  if (flow === "paperlessInvoice") {
+    // PAPERLESS (PLT) stap 1 — echte keten: POST invoice.php op de aparte pdf-service
+    // (TODO(live): pdf.tffxpress.com/pdf/invoice.php, form-urlencoded = encodeInvoicePhpBody
+    // van paperless-mapper, SESSIELOOS) -> base64-PDF die met "JVBER" begint.
+    return { status: 200, loggedOut: false, body: { pdfBase64: MOCK_PDF_BASE64 } };
+  }
+  if (flow === "paperlessInvoiceAttach") {
+    // PAPERLESS stap 2+3 — echte keten (TODO(live), MÉT sessie-cookie, dus door de pool):
+    // ajax/invoiceTransferPDF.php?id=<sessionkey> (body pltPdfData=JSON-quoted base64) en
+    // ajax/set_invoice_plt.php?sessionkey=<sessionkey> (body plt=1).
+    return {
+      status: 200,
+      loggedOut: false,
+      body: { ok: true, plt: 1, sessionkey: String(payload["sessionkey"] ?? "") },
+    };
   }
   if (flow.startsWith("submitShipment")) {
     mockShipmentSeq += 1;

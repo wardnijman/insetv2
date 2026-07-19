@@ -5,6 +5,7 @@
 // pure bedrading. `npm run compile` (root) moet gedraaid zijn; de pre-hooks doen dat.
 
 import { widgetLayer, submitLayer, domain as tffDomain } from "../../../../generated/tff/widget/index.ts";
+import { tffPaperlessInvoiceProvider } from "./paperless";
 import type { WidgetProviderLayer } from "./types";
 
 const providers: Record<string, WidgetProviderLayer> = {
@@ -19,6 +20,9 @@ const providers: Record<string, WidgetProviderLayer> = {
       validateRecipientAddress: widgetLayer.fns.validateRecipientAddress,
       validatePackages: widgetLayer.fns.validatePackages,
     },
+    // Paperless-factuur: mapper lokaal (oracle-bewaakt), PDF/attach via de proxy —
+    // hiermee gaat SkeletonContainer's "Genereer"-knop van fail-soft-toast naar werkend.
+    paperlessInvoice: tffPaperlessInvoiceProvider,
     submit: {
       fingerprintMatrix: submitLayer.fingerprintMatrix,
       widgetFieldsMatrix: submitLayer.widgetFieldsMatrix,

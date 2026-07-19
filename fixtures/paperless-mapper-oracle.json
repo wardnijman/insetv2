@@ -1,0 +1,252 @@
+{
+ "source": "v1 buildPaperlessInvoiceRequestFromShipment + generatePltInvoiceBlob (esbuild-bundel, capture-fetch)",
+ "invoicePhpUrl": "https://pdf.tffxpress.com/pdf/invoice.php",
+ "templates": {
+  "PLT_EXPORT": {
+   "request": {
+    "reference": "INV-1",
+    "shipper": {
+     "company": "Acme BV",
+     "firstName": "Jan",
+     "lastName": "Jansen",
+     "email": "jan@acme.nl",
+     "phoneNumber": "+31612345678",
+     "country": "NL",
+     "postalCode": "1011 AB",
+     "city": "Amsterdam",
+     "street": "Damrak 1",
+     "houseNumber": "",
+     "region": ""
+    },
+    "recipient": {
+     "company": "Liberty Books Inc",
+     "firstName": "John",
+     "lastName": "Doe",
+     "email": "john@libertybooks.com",
+     "phoneNumber": "+12125550123",
+     "country": "US",
+     "postalCode": "10001",
+     "city": "New York",
+     "street": "5th Ave 1",
+     "houseNumber": "",
+     "region": "NY"
+    },
+    "paperlessInvoice": {
+     "invoiceType": "COMMERCIAL",
+     "currency": "EUR",
+     "partyIds": {
+      "shipperVatNumber": "NL821071841B02",
+      "shipperEoriNumber": "NL821071841",
+      "consigneeVatNumber": "US12345",
+      "consigneeEoriNumber": ""
+     },
+     "billingAddress": null,
+     "reasonForExport": "COMMERCIAL_PURPOSE",
+     "paymentConditions": "14 days",
+     "incoterms": "DAP",
+     "invoiceNumber": "INV-1",
+     "clientReference": "INV-1",
+     "consigneeReference": "PO-77",
+     "remarks": "Fragile",
+     "statement": {
+      "standard": true,
+      "preferentialOrigin": false,
+      "eur1": false,
+      "cites": false
+     },
+     "signer": {
+      "name": "Jan Jansen",
+      "function": "Manager"
+     },
+     "lines": [
+      {
+       "description": "Boek over schepen",
+       "hsCode": "490199",
+       "quantity": 2,
+       "unit": "PIECES",
+       "unitValue": 25,
+       "netWeight": 0.8,
+       "grossWeight": 0.8,
+       "originCountry": "NL"
+      },
+      {
+       "description": "Boek over treinen",
+       "hsCode": "490199",
+       "quantity": 1,
+       "unit": "PIECES",
+       "unitValue": 12,
+       "netWeight": 0.4,
+       "grossWeight": 0.4,
+       "originCountry": "NL"
+      }
+     ]
+    }
+   },
+   "invoicePhpBody": "sessionkey=SK-EXPORT-1&var_currency=EUR&var_currency_symbol=%E2%82%AC&art_qty%5B%5D=2&art_qty%5B%5D=1&art_description%5B%5D=Boek+over+schepen&art_description%5B%5D=Boek+over+treinen&art_hscode%5B%5D=490199&art_hscode%5B%5D=490199&art_units%5B%5D=PIECES&art_units%5B%5D=PIECES&art_value%5B%5D=25&art_value%5B%5D=12&art_net_weight%5B%5D=0.8&art_net_weight%5B%5D=0.4&art_gross_weight%5B%5D=0.8&art_gross_weight%5B%5D=0.4&art_coo%5B%5D=&art_coo%5B%5D=NL&art_coo%5B%5D=NL&landvanoorsprong=NL&goederenomschrijving=Boek+over+schepen&inv_qty=3&inv_kgs=1.2&inv_kgs_bruto=1.2&inv_value=62&inv_extracosts_value=0&var_total_value=62&invoicetype=COMMERCIAL&EORI_sender=NL821071841&EORI_consignee=&VAT_sender=NL821071841B02&VAT_consignee=US12345&roe=COMMERCIAL_PURPOSE&incoterms=DAP&payment_conditions=14&invoice_number=INV-1&factuurreferentie=INV-1&consignee_reference=PO-77&remarks=Fragile&standard=true&pref=false&EUR1=false&cites=false&shipper_name=Jan+Jansen&shipper_function=Manager&sender_naam=Acme+BV&sender_straat=Damrak+1&sender_huisnummer=&sender_postcode=1011+AB&sender_plaats=Amsterdam&sender_land=NL&sender_phone=%2B31612345678&sender_vat=NL821071841B02&billto_naam=Liberty+Books+Inc&billto_straat=5th+Ave+1&billto_huisnummer=&billto_postcode=10001&billto_plaats=New+York&billto_land=US&billto_phone=%2B12125550123&billto_vat=US12345&shipto_naam=Liberty+Books+Inc&shipto_straat=5th+Ave+1&shipto_huisnummer=&shipto_postcode=10001&shipto_plaats=New+York&shipto_land=US&shipto_phone=%2B12125550123&shipto_vat=US12345&carrier=FED&service_description=Fedex+regional+economy&customerid=1001"
+  },
+  "PLT_BILLING": {
+   "request": {
+    "reference": "INV-1",
+    "shipper": {
+     "company": "Acme BV",
+     "firstName": "Jan",
+     "lastName": "Jansen",
+     "email": "jan@acme.nl",
+     "phoneNumber": "+31612345678",
+     "country": "NL",
+     "postalCode": "1011 AB",
+     "city": "Amsterdam",
+     "street": "Damrak 1",
+     "houseNumber": "",
+     "region": ""
+    },
+    "recipient": {
+     "company": "Liberty Books Inc / John Doe",
+     "firstName": "John",
+     "lastName": "Doe",
+     "email": "john@libertybooks.com",
+     "phoneNumber": "+12125550123",
+     "country": "US",
+     "postalCode": "10001",
+     "city": "New York",
+     "street": "5th Ave 1",
+     "houseNumber": "",
+     "region": "NY"
+    },
+    "paperlessInvoice": {
+     "invoiceType": "PROFORMA",
+     "currency": "USD",
+     "partyIds": {
+      "shipperVatNumber": "",
+      "shipperEoriNumber": "",
+      "consigneeVatNumber": "US99999",
+      "consigneeEoriNumber": ""
+     },
+     "billingAddress": {
+      "company": "Liberty Billing LLC",
+      "country": "US",
+      "postalCode": "10005",
+      "street": "Wall St 10",
+      "houseNumber": "b",
+      "city": "New York",
+      "region": "NY",
+      "phoneNumber": "+12125550999",
+      "vatNumber": "US99999"
+     },
+     "reasonForExport": "GIFT",
+     "paymentConditions": "30 dagen",
+     "incoterms": "DAP",
+     "invoiceNumber": "INV-1",
+     "clientReference": "INV-1",
+     "consigneeReference": "",
+     "remarks": "",
+     "statement": {
+      "standard": false,
+      "preferentialOrigin": true,
+      "eur1": true,
+      "cites": false
+     },
+     "signer": {
+      "name": "John Doe",
+      "function": ""
+     },
+     "lines": [
+      {
+       "description": "Boek over schepen",
+       "hsCode": "490199",
+       "quantity": 2,
+       "unit": "PIECES",
+       "unitValue": 25,
+       "netWeight": 0.8,
+       "grossWeight": 0.8,
+       "originCountry": "NL"
+      },
+      {
+       "description": "Boek over treinen",
+       "hsCode": "490199",
+       "quantity": 1,
+       "unit": "PIECES",
+       "unitValue": 12,
+       "netWeight": 0.4,
+       "grossWeight": 0.4,
+       "originCountry": "NL"
+      }
+     ]
+    }
+   },
+   "invoicePhpBody": "sessionkey=SK-BILLING-2&var_currency=USD&var_currency_symbol=%24&art_qty%5B%5D=2&art_qty%5B%5D=1&art_description%5B%5D=Boek+over+schepen&art_description%5B%5D=Boek+over+treinen&art_hscode%5B%5D=490199&art_hscode%5B%5D=490199&art_units%5B%5D=PIECES&art_units%5B%5D=PIECES&art_value%5B%5D=25&art_value%5B%5D=12&art_net_weight%5B%5D=0.8&art_net_weight%5B%5D=0.4&art_gross_weight%5B%5D=0.8&art_gross_weight%5B%5D=0.4&art_coo%5B%5D=&art_coo%5B%5D=NL&art_coo%5B%5D=NL&landvanoorsprong=NL&goederenomschrijving=Boek+over+schepen&inv_qty=3&inv_kgs=1.2&inv_kgs_bruto=1.2&inv_value=62&inv_extracosts_value=0&var_total_value=62&invoicetype=PROFORMA&EORI_sender=&EORI_consignee=&VAT_sender=&VAT_consignee=US99999&roe=GIFT&incoterms=DAP&payment_conditions=30&invoice_number=INV-1&factuurreferentie=INV-1&consignee_reference=&remarks=&standard=false&pref=true&EUR1=true&cites=false&shipper_name=John+Doe&shipper_function=&sender_naam=Acme+BV&sender_straat=Damrak+1&sender_huisnummer=&sender_postcode=1011+AB&sender_plaats=Amsterdam&sender_land=NL&sender_phone=%2B31612345678&sender_vat=&billto_naam=Liberty+Billing+LLC&billto_straat=Wall+St+10&billto_huisnummer=b&billto_postcode=10005&billto_plaats=New+York&billto_land=US&billto_phone=%2B12125550999&billto_vat=US99999&shipto_naam=Liberty+Books+Inc+%2F+John+Doe&shipto_straat=5th+Ave+1&shipto_huisnummer=&shipto_postcode=10001&shipto_plaats=New+York&shipto_land=US&shipto_phone=%2B12125550123&shipto_vat=US99999&carrier=FED&service_description=&customerid=1001"
+  },
+  "PLT_MINIMAAL": {
+   "request": {
+    "reference": "ORD-9",
+    "shipper": {
+     "company": "Acme BV",
+     "firstName": "Jan",
+     "lastName": "Jansen",
+     "email": "jan@acme.nl",
+     "phoneNumber": "+31612345678",
+     "country": "NL",
+     "postalCode": "1011 AB",
+     "city": "Amsterdam",
+     "street": "Damrak 1",
+     "houseNumber": "",
+     "region": ""
+    },
+    "recipient": {
+     "company": "Liberty Books Inc",
+     "firstName": "John",
+     "lastName": "Doe",
+     "email": "john@libertybooks.com",
+     "phoneNumber": "+12125550123",
+     "country": "US",
+     "postalCode": "10001",
+     "city": "New York",
+     "street": "5th Ave 1",
+     "houseNumber": "",
+     "region": "NY"
+    },
+    "paperlessInvoice": {
+     "invoiceType": "COMMERCIAL",
+     "currency": "EUR",
+     "partyIds": {
+      "shipperVatNumber": "",
+      "shipperEoriNumber": "",
+      "consigneeVatNumber": "",
+      "consigneeEoriNumber": ""
+     },
+     "billingAddress": null,
+     "reasonForExport": "RETURN_TO_ORIGIN_COMMERCIAL",
+     "paymentConditions": "",
+     "incoterms": "DAP",
+     "invoiceNumber": "",
+     "clientReference": "",
+     "consigneeReference": "",
+     "remarks": "",
+     "statement": {
+      "standard": true,
+      "preferentialOrigin": false,
+      "eur1": false,
+      "cites": false
+     },
+     "signer": {
+      "name": "",
+      "function": ""
+     },
+     "lines": [
+      {
+       "description": "Boekenlegger",
+       "hsCode": "490199",
+       "quantity": 1,
+       "unit": "PIECES",
+       "unitValue": 12,
+       "netWeight": 0.4,
+       "grossWeight": 0.4,
+       "originCountry": "NL"
+      }
+     ]
+    }
+   },
+   "invoicePhpBody": "sessionkey=draft-ORD-9&var_currency=EUR&var_currency_symbol=%E2%82%AC&art_qty%5B%5D=1&art_description%5B%5D=Boekenlegger&art_hscode%5B%5D=490199&art_units%5B%5D=PIECES&art_value%5B%5D=12&art_net_weight%5B%5D=0.4&art_gross_weight%5B%5D=0.4&art_coo%5B%5D=&art_coo%5B%5D=NL&landvanoorsprong=NL&goederenomschrijving=Boekenlegger&inv_qty=1&inv_kgs=0.4&inv_kgs_bruto=0.4&inv_value=12&inv_extracosts_value=0&var_total_value=12&invoicetype=COMMERCIAL&EORI_sender=&EORI_consignee=&VAT_sender=&VAT_consignee=&roe=RETURN_TO_ORIGIN_COMMERCIAL&incoterms=DAP&invoice_number=&factuurreferentie=&consignee_reference=&remarks=&standard=true&pref=false&EUR1=false&cites=false&shipper_name=&shipper_function=&sender_naam=Acme+BV&sender_straat=Damrak+1&sender_huisnummer=&sender_postcode=1011+AB&sender_plaats=Amsterdam&sender_land=NL&sender_phone=%2B31612345678&sender_vat=&billto_naam=Liberty+Books+Inc&billto_straat=5th+Ave+1&billto_huisnummer=&billto_postcode=10001&billto_plaats=New+York&billto_land=US&billto_phone=%2B12125550123&billto_vat=&shipto_naam=Liberty+Books+Inc&shipto_straat=5th+Ave+1&shipto_huisnummer=&shipto_postcode=10001&shipto_plaats=New+York&shipto_land=US&shipto_phone=%2B12125550123&shipto_vat=&carrier=TFF&service_description=&customerid=42"
+  }
+ }
+}

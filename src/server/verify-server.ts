@@ -139,6 +139,36 @@ const blocked = await fetch(`${base}/api/book`, {
 });
 check("book: capability-guard blokkeert DHL Express (403)", blocked.status === 403);
 
+// 6c) PAPERLESS-factuur: shipment -> mapper (serverside) -> pool ("invoice.php"-mock)
+// -> geldige base64-PDF + attach. contentType is load-bearing (v1-les).
+const pltShipment = {
+  ...bookShipment,
+  orderId: "ORD-PLT-1",
+  recipientAddress: { ...bookShipment.recipientAddress, company: "Bremer Buchhandel" },
+  products: [{ sku: "SKU-1", description: "Boek", hsCode: "490199", value: 25, weight: 0.8, originCountry: "NL", quantity: 2 }],
+  shipmentOptions: { ...bookShipment.shipmentOptions, invoiceRef: "INV-PLT", exportReason: "sale", incotermsGroupD: "DAP" },
+  paperlessInvoice: { invoiceType: "commercial_invoice", currency: "EUR", declarantName: "Jan Jansen" },
+};
+const plt = await fetch(`${base}/api/paperless/generate`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ shipment: pltShipment, sessionkey: "SK-TEST-1", customerId: "u1", attach: true }),
+});
+const pltBody = (await plt.json()) as any;
+const pltPdf = Buffer.from(String(pltBody?.invoice?.base64 ?? ""), "base64").toString("latin1");
+check("paperless: 200 + geldige base64-PDF (%PDF) met contentType",
+  plt.status === 200 && pltPdf.startsWith("%PDF") && pltBody.invoice?.contentType === "application/pdf");
+check("paperless: attach uitgevoerd + data-url voor preview",
+  pltBody.attached === true && String(pltBody.url ?? "").startsWith("data:application/pdf;base64,"));
+
+// zonder paperlessInvoice-blok faalt de mapper gesloten (v1-fout doorgegeven als 422)
+const pltBad = await fetch(`${base}/api/paperless/generate`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ shipment: { ...pltShipment, paperlessInvoice: undefined }, sessionkey: "SK-TEST-1", customerId: "u1" }),
+});
+check("paperless: 422 zonder paperlessInvoice-blok (fail-closed)", pltBad.status === 422);
+
 const sp = (await (await fetch(`${base}/api/service-points?postalCode=1011AB`)).json()) as unknown[];
 check("service-points: lege lijst (interim)", Array.isArray(sp) && sp.length === 0);
 
@@ -152,4 +182,4 @@ if (fail) {
   console.error(`verify-server FAALT (${fail})`);
   process.exit(1);
 }
-console.log("OK — widget-proxy: rates via runtime-pool, config per-tenant, fail-closed routes.");
+console.log("OK — widget-proxy: rates via runtime-pool, config per-tenant, paperless-PDF via pool, fail-closed routes.");

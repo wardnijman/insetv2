@@ -180,3 +180,90 @@ export function chooseInputFrom(tpl: Record<string, unknown>): { reusableData: R
   const opts = tpl.shipmentOptions as { chosenRate: { reusableData: Record<string, unknown> } };
   return { reusableData: structuredClone(opts.chosenRate.reusableData) };
 }
+
+// ── PAPERLESS-templates (mapper-oracle: oracle-paperless / verify-paperless) ──────
+// AFGELEID van het EXPORT-template, dat zelf NIET gemuteerd wordt: de bevroren
+// widget-payload-fixtures zijn zonder paperlessInvoice-blok gecaptured. Drie
+// varianten dekken de mapper-takken:
+//  - PLT_EXPORT  : rijk, 2 producten (multi-line), alle party-id's + statement.
+//  - PLT_BILLING : afwijkend factuuradres, PROFORMA/USD/gift, naam-in-company-optie.
+//  - PLT_MINIMAAL: kaal ({} als paperless-blok → alle defaults, invoiceRef leeg →
+//    orderId-referentie, "retour"-reden, payment_conditions-tak ONGEZET).
+
+function paperlessBase(): Record<string, any> {
+  return structuredClone(PAYLOAD_TEMPLATES.EXPORT) as Record<string, any>;
+}
+
+const pltExport = paperlessBase();
+pltExport.paperlessInvoice = {
+  invoiceType: "commercial_invoice",
+  currency: "EUR",
+  vatNumberShipper: "NL821071841B02",
+  vatNumberConsignee: "US12345",
+  eoriNumberShipper: "NL821071841",
+  eoriNumberConsignee: "",
+  paymentConditions: "14 days",
+  receiverReference: "PO-77",
+  remarks: "Fragile",
+  invoiceStatement: { standard: true, preferentialOrigin: false, euri: false, cites: false },
+  declarantName: "Jan Jansen",
+  declarantPosition: "Manager",
+};
+
+const pltBilling = paperlessBase();
+pltBilling.shipmentOptions.exportReason = "gift";
+pltBilling.paperlessInvoice = {
+  invoiceType: "pro_forma_invoice",
+  currency: "USD",
+  vatNumberConsignee: "US99999",
+  billingAddressDiffersFromDeliveryAddress: true,
+  billingAddress: {
+    company: "Liberty Billing LLC",
+    street: ["Wall St 10", "b"],
+    city: "New York",
+    region: "NY",
+    postalCode: "10005",
+    country: "us", // lowercase: uppercasing-tak van de mapper
+    phoneNumber: "+12125550999",
+  },
+  paymentConditions: "30 dagen",
+  invoiceStatement: { standard: false, preferentialOrigin: true, euri: true, cites: false },
+  declarantName: "John Doe",
+  declarantPosition: "",
+};
+
+const pltMinimaal = paperlessBase();
+pltMinimaal.orderId = "ORD-9";
+pltMinimaal.shipmentOptions.invoiceRef = "";
+pltMinimaal.shipmentOptions.exportReason = "retour";
+delete pltMinimaal.shipmentOptions.incotermsGroupD;
+pltMinimaal.products = [
+  { sku: "SKU-3", name: "Boekenlegger", hsCode: "490199", value: 12, weight: 0.4, originCountry: "nl" },
+];
+pltMinimaal.paperlessInvoice = {};
+
+export const PAPERLESS_TEMPLATES: Record<
+  string,
+  {
+    shipment: Record<string, unknown>;
+    buildOpts: { includeRecipientNameInCompany?: boolean };
+    /** Deterministische invoice.php-args (v1: sessionkey = forwarderRef, customerId = integration.customerId). */
+    php: { sessionkey: string; customerId: string | number; carrier?: string; serviceDescription?: string };
+  }
+> = {
+  PLT_EXPORT: {
+    shipment: pltExport,
+    buildOpts: {},
+    php: { sessionkey: "SK-EXPORT-1", customerId: "1001", carrier: "FED", serviceDescription: "Fedex regional economy" },
+  },
+  PLT_BILLING: {
+    shipment: pltBilling,
+    buildOpts: { includeRecipientNameInCompany: true },
+    php: { sessionkey: "SK-BILLING-2", customerId: "1001", carrier: "FED", serviceDescription: "" },
+  },
+  PLT_MINIMAAL: {
+    shipment: pltMinimaal,
+    buildOpts: {},
+    php: { sessionkey: "draft-ORD-9", customerId: 42 },
+  },
+};
