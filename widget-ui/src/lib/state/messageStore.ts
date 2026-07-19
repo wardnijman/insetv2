@@ -9,6 +9,8 @@
 
 import nl from "../messages/nl";
 import en from "../messages/en";
+import { setPersistentValidationsLanguage } from "../validations/translations/i18n";
+import { setProvidersLanguage } from "../providers/registry";
 
 export type Lang = "EN" | "NL" | "FR" | "IT" | "ES" | "DE";
 
@@ -33,4 +35,7 @@ export function setLang(lang?: Lang, tenantOverrides?: Record<string, unknown>) 
   const override = tenantOverrides?.[safeLang.toLowerCase()] ?? {};
   m = deepMerge(base, override);
   currentLang = safeLang;
+  // v1-pariteit: de taalwissel zet óók de validator-catalogi (persistent + provider).
+  setPersistentValidationsLanguage(safeLang);
+  setProvidersLanguage(safeLang);
 }

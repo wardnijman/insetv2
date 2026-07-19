@@ -1,0 +1,708 @@
+{
+  "NL": {
+    "B_getRates_0": {
+      "validation": {
+        "shipper": {
+          "countryRequired": "Land is verplicht",
+          "unknownCountry": "Onbekend land: {value}",
+          "postalcodeRequired": "Postcode is verplicht",
+          "postalcodeMax8": "Postcode mag maximaal 8 tekens zijn",
+          "postalcodeFormatExample": "Ongeldig postcodeformaat. Voorbeeld: {example}",
+          "streetAdditionTooLong": "Straattoevoeging overschrijdt 35 tekens",
+          "streetRequired": "Straat is verplicht",
+          "streetMaxLength": "Straat mag maximaal 35 tekens zijn",
+          "cityRequired": "Plaats is verplicht",
+          "cityMaxLength": "Plaats mag maximaal 35 tekens zijn",
+          "phoneNumberRequired": "Telefoonnummer is verplicht"
+        },
+        "recipient": {
+          "countryRequired": "Land is verplicht",
+          "unknownCountry": "Onbekend land: {value}",
+          "postalcodeRequired": "Postcode is verplicht",
+          "postalcodeMax8": "Postcode mag maximaal 8 tekens zijn",
+          "postalcodeFormatExample": "Ongeldig postcodeformaat. Voorbeeld: {example}",
+          "streetAdditionTooLong": "Straattoevoeging overschrijdt 35 tekens",
+          "streetRequired": "Straat is verplicht",
+          "streetMaxLength": "Straat mag maximaal 35 tekens zijn",
+          "cityRequired": "Plaats is verplicht",
+          "cityMaxLength": "Plaats mag maximaal 35 tekens zijn",
+          "unknownRegion": "Onbekende regio",
+          "regionRequired": "Regio is verplicht voor dit land",
+          "firstNameRequired": "Voornaam is verplicht",
+          "lastNameRequired": "Achternaam is verplicht",
+          "nameMaxLength": "Voor- en achternaam samen mogen maximaal {max} tekens zijn (inclusief spatie)",
+          "phoneNumberRequired": "Telefoonnummer is verplicht"
+        },
+        "package": {
+          "missingType": "Pakket {i}: type is verplicht",
+          "typeLabel": {
+            "pallet": "Pallet",
+            "package": "Pakket",
+            "document": "Document"
+          },
+          "palletDimsExceeded": "Pallets mogen maximaal 200 cm lang, breed en hoog zijn",
+          "palletWeightExceeded": "Pallets mogen maximaal 450 kg wegen",
+          "docDimsExceeded": "Documenten mogen maximaal 100 cm lang, breed en hoog zijn",
+          "docWeightExceeded": "Documenten mogen maximaal 2 kg wegen",
+          "pkgDimsExceeded": "Pakketten mogen maximaal 300 cm lang en breed, en 200 cm hoog zijn",
+          "pkgWeightExceeded": "Pakketten mogen maximaal 70 kg wegen",
+          "unknownType": "Onbekend pakkettype: {type}",
+          "lengthRequired": "Lengte is verplicht",
+          "lengthMin": "Minimale lengte is 1 cm",
+          "lengthMaxPallet": "Maximale palletlengte is 200 cm",
+          "lengthMax": "Maximale lengte is {max} cm",
+          "widthRequired": "Breedte is verplicht",
+          "widthMin": "Minimale breedte is 1 cm",
+          "widthMaxPallet": "Maximale palletbreedte is 200 cm",
+          "widthMax": "Maximale breedte is {max} cm",
+          "heightRequired": "Hoogte is verplicht",
+          "heightMin": "Minimale hoogte is 1 cm",
+          "heightMaxPallet": "Maximale pallethoogte is 200 cm",
+          "heightMax": "Maximale hoogte is {max} cm",
+          "weightRequired": "Gewicht is verplicht",
+          "weightMin": "Minimumgewicht is 1 kg",
+          "weightMax": "Maximaal gewicht voor {type} is {max} kg"
+        }
+      }
+    },
+    "D_submitShipmentbase": {
+      "validation": {
+        "product": {
+          "missingDescription": "Product {label}: beschrijving ontbreekt.",
+          "invalidHsCode": "Product {label}: ongeldige HS-code, bijvoorbeeld 970690.",
+          "quantityTooLow": "Product {label}: aantal moet minimaal 1 zijn.",
+          "missingOrigin": "Product {label}: herkomstland ontbreekt of is ongeldig.",
+          "weightTooLow": "Product {label}: gewicht moet groter zijn dan 0.",
+          "valueTooLow": "Product {label}: waarde moet groter zijn dan 0.",
+          "missingCurrency": "Product {label}: valuta ontbreekt."
+        },
+        "item": {
+          "descriptionRequired": "Beschrijving is verplicht.",
+          "descriptionTooLong": "Maximaal 100 tekens toegestaan.",
+          "weightRequired": "Gewicht is verplicht.",
+          "weightMin": "Minimumgewicht is 0,01 kg.",
+          "weightMax": "Maximumgewicht is 999 kg.",
+          "valueRequired": "Waarde is verplicht.",
+          "valueMin": "Minimumwaarde is €0,01.",
+          "valueMax": "Maximumwaarde is €100.000.",
+          "originRequired": "Herkomstland is verplicht.",
+          "originInvalid": "Gebruik een geldige ISO-landcode, bijvoorbeeld NL.",
+          "hsCodeInvalid": "Ongeldige HS-code, bijvoorbeeld 970690."
+        },
+        "insurance": {
+          "valueMin": "Verzekerde waarde mag niet negatief zijn."
+        },
+        "invoice": {
+          "required": "Een factuurbestand is verplicht voor niet-EU-zendingen."
+        },
+        "shipmentOptions": {
+          "incotermsGroupDInvalid": "Ongeldige leveringsvoorwaarde."
+        },
+        "shipper": {
+          "countryRequired": "Land is verplicht",
+          "unknownCountry": "Onbekend land: {value}",
+          "postalcodeRequired": "Postcode is verplicht",
+          "postalcodeMax8": "Postcode mag maximaal 8 tekens zijn",
+          "postalcodeFormatExample": "Ongeldig postcodeformaat. Voorbeeld: {example}",
+          "streetAdditionTooLong": "Straattoevoeging overschrijdt 35 tekens",
+          "streetRequired": "Straat is verplicht",
+          "streetMaxLength": "Straat mag maximaal 35 tekens zijn",
+          "cityRequired": "Plaats is verplicht",
+          "cityMaxLength": "Plaats mag maximaal 35 tekens zijn",
+          "firstNameRequired": "Voornaam is verplicht",
+          "lastNameRequired": "Achternaam is verplicht",
+          "nameMaxLength": "Voor- en achternaam samen mogen maximaal {max} tekens zijn (inclusief spatie)"
+        },
+        "recipient": {
+          "countryRequired": "Land is verplicht",
+          "unknownCountry": "Onbekend land: {value}",
+          "postalcodeRequired": "Postcode is verplicht",
+          "postalcodeMax8": "Postcode mag maximaal 8 tekens zijn",
+          "postalcodeFormatExample": "Ongeldig postcodeformaat. Voorbeeld: {example}",
+          "streetAdditionTooLong": "Straattoevoeging overschrijdt 35 tekens",
+          "streetRequired": "Straat is verplicht",
+          "streetMaxLength": "Straat mag maximaal 35 tekens zijn",
+          "cityRequired": "Plaats is verplicht",
+          "cityMaxLength": "Plaats mag maximaal 35 tekens zijn",
+          "firstNameRequired": "Voornaam is verplicht",
+          "lastNameRequired": "Achternaam is verplicht",
+          "nameMaxLength": "Voor- en achternaam samen mogen maximaal {max} tekens zijn (inclusief spatie)"
+        },
+        "package": {
+          "missingType": "Pakket {i}: type is verplicht",
+          "unknownType": "Onbekend pakkettype: {type}",
+          "palletDimsExceeded": "Pallets mogen maximaal 200 cm lang, breed en hoog zijn",
+          "palletWeightExceeded": "Pallets mogen maximaal 450 kg wegen",
+          "docDimsExceeded": "Documenten mogen maximaal 100 cm lang, breed en hoog zijn",
+          "docWeightExceeded": "Documenten mogen maximaal 2 kg wegen",
+          "pkgDimsExceeded": "Pakketten mogen maximaal 300 cm lang en breed, en 200 cm hoog zijn",
+          "pkgWeightExceeded": "Pakketten mogen maximaal 70 kg wegen",
+          "lengthRequired": "Lengte is verplicht",
+          "lengthMin": "Minimale lengte is 1 cm",
+          "lengthMaxPallet": "Maximale palletlengte is 200 cm",
+          "lengthMax": "Maximale lengte is {max} cm",
+          "widthRequired": "Breedte is verplicht",
+          "widthMin": "Minimale breedte is 1 cm",
+          "widthMaxPallet": "Maximale palletbreedte is 200 cm",
+          "widthMax": "Maximale breedte is {max} cm",
+          "heightRequired": "Hoogte is verplicht",
+          "heightMin": "Minimale hoogte is 1 cm",
+          "heightMaxPallet": "Maximale pallethoogte is 200 cm",
+          "heightMax": "Maximale hoogte is {max} cm",
+          "weightRequired": "Gewicht is verplicht",
+          "weightMin": "Minimumgewicht is 1 kg",
+          "weightMax": "Maximaal gewicht voor {type} is {max} kg"
+        }
+      }
+    }
+  },
+  "EN": {
+    "B_getRates_0": {
+      "validation": {
+        "shipper": {
+          "countryRequired": "Country is required",
+          "unknownCountry": "Unknown country: {value}",
+          "postalcodeRequired": "Postal code is required",
+          "postalcodeMax8": "Postal code must be max 8 characters",
+          "postalcodeFormatExample": "Invalid postal code format. Example: {example}",
+          "streetAdditionTooLong": "Street addition exceeds 35 characters",
+          "streetRequired": "Street is required",
+          "streetMaxLength": "Street must be max 35 characters",
+          "cityRequired": "City is required",
+          "cityMaxLength": "City must be max 35 characters",
+          "phoneNumberRequired": "Phone number is required"
+        },
+        "recipient": {
+          "countryRequired": "Country is required",
+          "unknownCountry": "Unknown country: {value}",
+          "postalcodeRequired": "Postal code is required",
+          "postalcodeMax8": "Postal code must be max 8 characters",
+          "postalcodeFormatExample": "Invalid postal code format. Example: {example}",
+          "streetAdditionTooLong": "Street addition exceeds 35 characters",
+          "streetRequired": "Street is required",
+          "streetMaxLength": "Street must be max 35 characters",
+          "cityRequired": "City is required",
+          "cityMaxLength": "City must be max 35 characters",
+          "unknownRegion": "Unknown region",
+          "regionRequired": "Region is required for this country",
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "nameMaxLength": "First and last name together may be at most {max} characters (including the space)",
+          "phoneNumberRequired": "Phone number is required"
+        },
+        "package": {
+          "missingType": "Package {i}: type is required",
+          "typeLabel": {
+            "pallet": "Pallet",
+            "package": "Package",
+            "document": "Document"
+          },
+          "palletDimsExceeded": "Pallets may be max 200 cm in length, width, and height",
+          "palletWeightExceeded": "Pallets may weigh up to 450 kg",
+          "docDimsExceeded": "Documents may be max 100 cm in length, width, and height",
+          "docWeightExceeded": "Documents may weigh up to 2 kg",
+          "pkgDimsExceeded": "Packages may be max 300 cm in length and width, and 200 cm in height",
+          "pkgWeightExceeded": "Packages may weigh up to 70 kg",
+          "unknownType": "Unknown package type: {type}",
+          "lengthRequired": "Length is required",
+          "lengthMin": "Minimum length is 1 cm",
+          "lengthMaxPallet": "Maximum pallet length is 200 cm",
+          "lengthMax": "Maximum length is {max} cm",
+          "widthRequired": "Width is required",
+          "widthMin": "Minimum width is 1 cm",
+          "widthMaxPallet": "Maximum pallet width is 200 cm",
+          "widthMax": "Maximum width is {max} cm",
+          "heightRequired": "Height is required",
+          "heightMin": "Minimum height is 1 cm",
+          "heightMaxPallet": "Maximum pallet height is 200 cm",
+          "heightMax": "Maximum height is {max} cm",
+          "weightRequired": "Weight is required",
+          "weightMin": "Minimum weight is 1 kg",
+          "weightMax": "Maximum weight for {type} is {max} kg"
+        }
+      }
+    },
+    "D_submitShipmentbase": {
+      "validation": {
+        "product": {
+          "missingDescription": "Product {label}: description is missing.",
+          "invalidHsCode": "Product {label}: invalid HS code, for example 970690.",
+          "quantityTooLow": "Product {label}: quantity must be at least 1.",
+          "missingOrigin": "Product {label}: origin country is missing or invalid.",
+          "weightTooLow": "Product {label}: weight must be greater than 0.",
+          "valueTooLow": "Product {label}: value must be greater than 0.",
+          "missingCurrency": "Product {label}: currency is missing."
+        },
+        "item": {
+          "descriptionRequired": "Description is required.",
+          "descriptionTooLong": "Maximum 100 characters allowed.",
+          "weightRequired": "Weight is required.",
+          "weightMin": "Minimum weight is 0.01 kg.",
+          "weightMax": "Maximum weight is 999 kg.",
+          "valueRequired": "Value is required.",
+          "valueMin": "Minimum value is €0.01.",
+          "valueMax": "Maximum value is €100,000.",
+          "originRequired": "Origin country is required.",
+          "originInvalid": "Use a valid ISO country code, for example NL.",
+          "hsCodeInvalid": "Invalid HS code, for example 970690."
+        },
+        "insurance": {
+          "valueMin": "Insurance value may not be negative."
+        },
+        "invoice": {
+          "required": "An invoice file is required for non-EU shipments."
+        },
+        "shipmentOptions": {
+          "incotermsGroupDInvalid": "Invalid delivery term."
+        },
+        "shipper": {
+          "countryRequired": "Country is required",
+          "unknownCountry": "Unknown country: {value}",
+          "postalcodeRequired": "Postal code is required",
+          "postalcodeMax8": "Postal code must be max 8 characters",
+          "postalcodeFormatExample": "Invalid postal code format. Example: {example}",
+          "streetAdditionTooLong": "Street addition exceeds 35 characters",
+          "streetRequired": "Street is required",
+          "streetMaxLength": "Street must be max 35 characters",
+          "cityRequired": "City is required",
+          "cityMaxLength": "City must be max 35 characters",
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "nameMaxLength": "First and last name together may be at most {max} characters (including the space)"
+        },
+        "recipient": {
+          "countryRequired": "Country is required",
+          "unknownCountry": "Unknown country: {value}",
+          "postalcodeRequired": "Postal code is required",
+          "postalcodeMax8": "Postal code must be max 8 characters",
+          "postalcodeFormatExample": "Invalid postal code format. Example: {example}",
+          "streetAdditionTooLong": "Street addition exceeds 35 characters",
+          "streetRequired": "Street is required",
+          "streetMaxLength": "Street must be max 35 characters",
+          "cityRequired": "City is required",
+          "cityMaxLength": "City must be max 35 characters",
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "nameMaxLength": "First and last name together may be at most {max} characters (including the space)"
+        },
+        "package": {
+          "missingType": "Package {i}: type is required",
+          "unknownType": "Unknown package type: {type}",
+          "palletDimsExceeded": "Pallets may be max 200 cm in length, width, and height",
+          "palletWeightExceeded": "Pallets may weigh up to 450 kg",
+          "docDimsExceeded": "Documents may be max 100 cm in length, width, and height",
+          "docWeightExceeded": "Documents may weigh up to 2 kg",
+          "pkgDimsExceeded": "Packages may be max 300 cm in length and width, and 200 cm in height",
+          "pkgWeightExceeded": "Packages may weigh up to 70 kg",
+          "lengthRequired": "Length is required",
+          "lengthMin": "Minimum length is 1 cm",
+          "lengthMaxPallet": "Maximum pallet length is 200 cm",
+          "lengthMax": "Maximum length is {max} cm",
+          "widthRequired": "Width is required",
+          "widthMin": "Minimum width is 1 cm",
+          "widthMaxPallet": "Maximum pallet width is 200 cm",
+          "widthMax": "Maximum width is {max} cm",
+          "heightRequired": "Height is required",
+          "heightMin": "Minimum height is 1 cm",
+          "heightMaxPallet": "Maximum pallet height is 200 cm",
+          "heightMax": "Maximum height is {max} cm",
+          "weightRequired": "Weight is required",
+          "weightMin": "Minimum weight is 1 kg",
+          "weightMax": "Maximum weight for {type} is {max} kg"
+        }
+      }
+    }
+  },
+  "FR": {
+    "B_getRates_0": {
+      "validation": {
+        "shipper": {
+          "countryRequired": "Le pays est requis",
+          "unknownCountry": "Pays inconnu : {value}",
+          "postalcodeRequired": "Le code postal est requis",
+          "postalcodeMax8": "Le code postal doit comporter au maximum 8 caractères",
+          "postalcodeFormatExample": "Format de code postal invalide. Exemple : {example}",
+          "streetAdditionTooLong": "Le complément d’adresse dépasse 35 caractères",
+          "streetRequired": "La rue est requise",
+          "streetMaxLength": "La rue doit comporter au maximum 35 caractères",
+          "cityRequired": "La ville est requise",
+          "cityMaxLength": "La ville doit comporter au maximum 35 caractères",
+          "phoneNumberRequired": "Le numéro de téléphone est requis"
+        },
+        "recipient": {
+          "countryRequired": "Le pays est requis",
+          "unknownCountry": "Pays inconnu : {value}",
+          "postalcodeRequired": "Le code postal est requis",
+          "postalcodeMax8": "Le code postal doit comporter au maximum 8 caractères",
+          "postalcodeFormatExample": "Format de code postal invalide. Exemple : {example}",
+          "streetAdditionTooLong": "Le complément d’adresse dépasse 35 caractères",
+          "streetRequired": "La rue est requise",
+          "streetMaxLength": "La rue doit comporter au maximum 35 caractères",
+          "cityRequired": "La ville est requise",
+          "cityMaxLength": "La ville doit comporter au maximum 35 caractères",
+          "unknownRegion": "Région américaine inconnue",
+          "firstNameRequired": "Le prénom est requis",
+          "lastNameRequired": "Le nom de famille est requis",
+          "nameMaxLength": "Le prénom et le nom réunis peuvent comporter au maximum {max} caractères (espace compris)",
+          "phoneNumberRequired": "Le numéro de téléphone est requis"
+        },
+        "package": {
+          "missingType": "Colis {i} : le type est requis",
+          "typeLabel": {
+            "pallet": "Palette",
+            "package": "Colis",
+            "document": "Document"
+          },
+          "palletDimsExceeded": "Les palettes peuvent mesurer au maximum 200 cm en longueur, largeur et hauteur",
+          "palletWeightExceeded": "Les palettes peuvent peser jusqu’à 450 kg",
+          "docDimsExceeded": "Les documents peuvent mesurer au maximum 100 cm en longueur, largeur et hauteur",
+          "docWeightExceeded": "Les documents peuvent peser jusqu’à 2 kg",
+          "pkgDimsExceeded": "Les colis peuvent mesurer au maximum 300 cm en longueur et largeur, et 200 cm en hauteur",
+          "pkgWeightExceeded": "Les colis peuvent peser jusqu’à 70 kg",
+          "unknownType": "Type de colis inconnu : {type}",
+          "lengthRequired": "La longueur est requise",
+          "lengthMin": "La longueur minimale est de 1 cm",
+          "lengthMaxPallet": "La longueur maximale d’une palette est de 200 cm",
+          "lengthMax": "La longueur maximale est de {max} cm",
+          "widthRequired": "La largeur est requise",
+          "widthMin": "La largeur minimale est de 1 cm",
+          "widthMaxPallet": "La largeur maximale d’une palette est de 200 cm",
+          "widthMax": "La largeur maximale est de {max} cm",
+          "heightRequired": "La hauteur est requise",
+          "heightMin": "La hauteur minimale est de 1 cm",
+          "heightMaxPallet": "La hauteur maximale d’une palette est de 200 cm",
+          "heightMax": "La hauteur maximale est de {max} cm",
+          "weightRequired": "Le poids est requis",
+          "weightMin": "Le poids minimum est de 1 kg",
+          "weightMax": "Le poids maximal pour {type} est de {max} kg"
+        }
+      }
+    },
+    "D_submitShipmentbase_0": {
+      "validation": {
+        "product": {
+          "missingDescription": "Produit {i} : description manquante.",
+          "invalidHsCode": "Produit {i} : code SH invalide, p. ex. 970690.",
+          "quantityTooLow": "Produit {i} : la quantité doit être au moins 1.",
+          "missingOrigin": "Produit {i} : pays d’origine manquant ou invalide.",
+          "weightTooLow": "Produit {i} : le poids doit être supérieur à 0.",
+          "valueTooLow": "Produit {i} : la valeur doit être supérieure à 0.",
+          "missingCurrency": "Produit {i} : devise manquante."
+        },
+        "item": {
+          "descriptionRequired": "La description est requise.",
+          "descriptionTooLong": "Maximum 100 caractères autorisés.",
+          "weightRequired": "Le poids est requis.",
+          "weightMin": "Le poids minimum est de 0,01 kg.",
+          "weightMax": "Le poids maximum est de 999 kg.",
+          "valueRequired": "La valeur est requise.",
+          "valueMin": "La valeur minimale est de 0,01 €.",
+          "valueMax": "La valeur maximale est de 100 000 €.",
+          "originRequired": "Le pays d’origine est requis.",
+          "originInvalid": "Utilisez un code pays ISO valide (p. ex. NL).",
+          "hsCodeInvalid": "Code SH invalide, p. ex. 970690."
+        },
+        "insurance": {
+          "valueMin": "La valeur assurée doit être supérieure à 0."
+        },
+        "shipmentOptions": {
+          "incotermsGroupDInvalid": "Incoterm invalide."
+        }
+      }
+    }
+  },
+  "DE": {
+    "B_getRates_0": {
+      "validation": {
+        "shipper": {
+          "countryRequired": "Land ist erforderlich",
+          "unknownCountry": "Unbekanntes Land: {value}",
+          "postalcodeRequired": "Postleitzahl ist erforderlich",
+          "postalcodeMax8": "Postleitzahl darf höchstens 8 Zeichen lang sein",
+          "postalcodeFormatExample": "Ungültiges Postleitzahlformat. Beispiel: {example}",
+          "streetAdditionTooLong": "Adresszusatz überschreitet 35 Zeichen",
+          "streetRequired": "Straße ist erforderlich",
+          "streetMaxLength": "Straße darf höchstens 35 Zeichen lang sein",
+          "cityRequired": "Stadt ist erforderlich",
+          "cityMaxLength": "Stadt darf höchstens 35 Zeichen lang sein",
+          "phoneNumberRequired": "Telefonnummer ist erforderlich"
+        },
+        "recipient": {
+          "countryRequired": "Land ist erforderlich",
+          "unknownCountry": "Unbekanntes Land: {value}",
+          "postalcodeRequired": "Postleitzahl ist erforderlich",
+          "postalcodeMax8": "Postleitzahl darf höchstens 8 Zeichen lang sein",
+          "postalcodeFormatExample": "Ungültiges Postleitzahlformat. Beispiel: {example}",
+          "streetAdditionTooLong": "Adresszusatz überschreitet 35 Zeichen",
+          "streetRequired": "Straße ist erforderlich",
+          "streetMaxLength": "Straße darf höchstens 35 Zeichen lang sein",
+          "cityRequired": "Stadt ist erforderlich",
+          "cityMaxLength": "Stadt darf höchstens 35 Zeichen lang sein",
+          "unknownRegion": "Unbekannte US-Region",
+          "firstNameRequired": "Vorname ist erforderlich",
+          "lastNameRequired": "Nachname ist erforderlich",
+          "nameMaxLength": "Vor- und Nachname dürfen zusammen maximal {max} Zeichen lang sein (inklusive Leerzeichen)",
+          "phoneNumberRequired": "Telefonnummer ist erforderlich"
+        },
+        "package": {
+          "missingType": "Paket {i}: Typ ist erforderlich",
+          "typeLabel": {
+            "pallet": "Palette",
+            "package": "Paket",
+            "document": "Dokument"
+          },
+          "palletDimsExceeded": "Paletten dürfen maximal 200 cm in Länge, Breite und Höhe haben",
+          "palletWeightExceeded": "Paletten dürfen bis zu 450 kg wiegen",
+          "docDimsExceeded": "Dokumente dürfen maximal 100 cm in Länge, Breite und Höhe haben",
+          "docWeightExceeded": "Dokumente dürfen bis zu 2 kg wiegen",
+          "pkgDimsExceeded": "Pakete dürfen maximal 300 cm in Länge und Breite und 200 cm in Höhe haben",
+          "pkgWeightExceeded": "Pakete dürfen bis zu 70 kg wiegen",
+          "unknownType": "Unbekannter Pakettyp: {type}",
+          "lengthRequired": "Länge ist erforderlich",
+          "lengthMin": "Mindestlänge ist 1 cm",
+          "lengthMaxPallet": "Maximale Palettenlänge ist 200 cm",
+          "lengthMax": "Maximale Länge ist {max} cm",
+          "widthRequired": "Breite ist erforderlich",
+          "widthMin": "Mindestbreite ist 1 cm",
+          "widthMaxPallet": "Maximale Palettenbreite ist 200 cm",
+          "widthMax": "Maximale Breite ist {max} cm",
+          "heightRequired": "Höhe ist erforderlich",
+          "heightMin": "Mindesthöhe ist 1 cm",
+          "heightMaxPallet": "Maximale Palettenhöhe ist 200 cm",
+          "heightMax": "Maximale Höhe ist {max} cm",
+          "weightRequired": "Gewicht ist erforderlich",
+          "weightMin": "Mindestgewicht ist 1 kg",
+          "weightMax": "Maximales Gewicht für {type} ist {max} kg"
+        }
+      }
+    },
+    "D_submitShipmentbase_0": {
+      "validation": {
+        "product": {
+          "missingDescription": "Produkt {i}: Beschreibung fehlt.",
+          "invalidHsCode": "Produkt {i}: Ungültiger HS-Code, z. B. 970690.",
+          "quantityTooLow": "Produkt {i}: Menge muss mindestens 1 sein.",
+          "missingOrigin": "Produkt {i}: Herkunftsland fehlt oder ist ungültig.",
+          "weightTooLow": "Produkt {i}: Gewicht muss größer als 0 sein.",
+          "valueTooLow": "Produkt {i}: Wert muss größer als 0 sein.",
+          "missingCurrency": "Produkt {i}: Währung fehlt."
+        },
+        "item": {
+          "descriptionRequired": "Beschreibung ist erforderlich.",
+          "descriptionTooLong": "Maximal 100 Zeichen erlaubt.",
+          "weightRequired": "Gewicht ist erforderlich.",
+          "weightMin": "Mindestgewicht ist 0.01 kg.",
+          "weightMax": "Maximalgewicht ist 999 kg.",
+          "valueRequired": "Wert ist erforderlich.",
+          "valueMin": "Mindestwert ist €0.01.",
+          "valueMax": "Höchstwert ist €100,000.",
+          "originRequired": "Herkunftsland ist erforderlich.",
+          "originInvalid": "Gültiger ISO-Ländercode erforderlich (z. B. NL).",
+          "hsCodeInvalid": "Ungültiger HS-Code, z. B. 970690."
+        },
+        "insurance": {
+          "valueMin": "Versicherungswert muss größer als 0 sein."
+        },
+        "shipmentOptions": {
+          "incotermsGroupDInvalid": "Ungültige Lieferklausel."
+        }
+      }
+    }
+  },
+  "ES": {
+    "B_getRates_0": {
+      "validation": {
+        "shipper": {
+          "countryRequired": "El país es obligatorio",
+          "unknownCountry": "País desconocido: {value}",
+          "postalcodeRequired": "El código postal es obligatorio",
+          "postalcodeMax8": "El código postal debe tener como máximo 8 caracteres",
+          "postalcodeFormatExample": "Formato de código postal no válido. Ejemplo: {example}",
+          "streetAdditionTooLong": "El añadido de la calle supera los 35 caracteres",
+          "streetRequired": "La calle es obligatoria",
+          "streetMaxLength": "La calle debe tener como máximo 35 caracteres",
+          "cityRequired": "La ciudad es obligatoria",
+          "cityMaxLength": "La ciudad debe tener como máximo 35 caracteres",
+          "phoneNumberRequired": "El número de teléfono es obligatorio"
+        },
+        "recipient": {
+          "countryRequired": "El país es obligatorio",
+          "unknownCountry": "País desconocido: {value}",
+          "postalcodeRequired": "El código postal es obligatorio",
+          "postalcodeMax8": "El código postal debe tener como máximo 8 caracteres",
+          "postalcodeFormatExample": "Formato de código postal no válido. Ejemplo: {example}",
+          "streetAdditionTooLong": "El añadido de la calle supera los 35 caracteres",
+          "streetRequired": "La calle es obligatoria",
+          "streetMaxLength": "La calle debe tener como máximo 35 caracteres",
+          "cityRequired": "La ciudad es obligatoria",
+          "cityMaxLength": "La ciudad debe tener como máximo 35 caracteres",
+          "unknownRegion": "Región de EE. UU. desconocida",
+          "firstNameRequired": "El nombre es obligatorio",
+          "lastNameRequired": "El apellido es obligatorio",
+          "nameMaxLength": "El nombre y el apellido juntos pueden tener como máximo {max} caracteres (incluido el espacio)",
+          "phoneNumberRequired": "El número de teléfono es obligatorio"
+        },
+        "package": {
+          "missingType": "Paquete {i}: el tipo es obligatorio",
+          "typeLabel": {
+            "pallet": "Palé",
+            "package": "Paquete",
+            "document": "Documento"
+          },
+          "palletDimsExceeded": "Los palés pueden tener como máximo 200 cm de largo, ancho y alto",
+          "palletWeightExceeded": "Los palés pueden pesar como máximo 450 kg",
+          "docDimsExceeded": "Los documentos pueden tener como máximo 100 cm de largo, ancho y alto",
+          "docWeightExceeded": "Los documentos pueden pesar como máximo 2 kg",
+          "pkgDimsExceeded": "Los paquetes pueden tener como máximo 300 cm de largo y ancho, y 200 cm de alto",
+          "pkgWeightExceeded": "Los paquetes pueden pesar como máximo 70 kg",
+          "unknownType": "Tipo de paquete desconocido: {type}",
+          "lengthRequired": "La longitud es obligatoria",
+          "lengthMin": "La longitud mínima es 1 cm",
+          "lengthMaxPallet": "La longitud máxima del palé es 200 cm",
+          "lengthMax": "La longitud máxima es {max} cm",
+          "widthRequired": "El ancho es obligatorio",
+          "widthMin": "El ancho mínimo es 1 cm",
+          "widthMaxPallet": "El ancho máximo del palé es 200 cm",
+          "widthMax": "El ancho máximo es {max} cm",
+          "heightRequired": "La altura es obligatoria",
+          "heightMin": "La altura mínima es 1 cm",
+          "heightMaxPallet": "La altura máxima del palé es 200 cm",
+          "heightMax": "La altura máxima es {max} cm",
+          "weightRequired": "El peso es obligatorio",
+          "weightMin": "El peso mínimo es 1 kg",
+          "weightMax": "El peso máximo para {type} es {max} kg"
+        }
+      }
+    },
+    "D_submitShipmentbase_0": {
+      "validation": {
+        "product": {
+          "missingDescription": "Producto {i}: falta la descripción.",
+          "invalidHsCode": "Producto {i}: código HS no válido, p. ej. 970690.",
+          "quantityTooLow": "Producto {i}: la cantidad debe ser al menos 1.",
+          "missingOrigin": "Producto {i}: falta el país de origen o es inválido.",
+          "weightTooLow": "Producto {i}: el peso debe ser mayor que 0.",
+          "valueTooLow": "Producto {i}: el valor debe ser mayor que 0.",
+          "missingCurrency": "Producto {i}: falta la moneda."
+        },
+        "item": {
+          "descriptionRequired": "La descripción es obligatoria.",
+          "descriptionTooLong": "Se permiten como máximo 100 caracteres.",
+          "weightRequired": "El peso es obligatorio.",
+          "weightMin": "El peso mínimo es 0.01 kg.",
+          "weightMax": "El peso máximo es 999 kg.",
+          "valueRequired": "El valor es obligatorio.",
+          "valueMin": "El valor mínimo es €0.01.",
+          "valueMax": "El valor máximo es €100,000.",
+          "originRequired": "El país de origen es obligatorio.",
+          "originInvalid": "Use un código de país ISO válido (p. ej., NL).",
+          "hsCodeInvalid": "Código HS no válido, p. ej. 970690."
+        },
+        "insurance": {
+          "valueMin": "El valor del seguro debe ser mayor que 0."
+        },
+        "shipmentOptions": {
+          "incotermsGroupDInvalid": "Término de entrega no válido."
+        }
+      }
+    }
+  },
+  "IT": {
+    "B_getRates_0": {
+      "validation": {
+        "shipper": {
+          "countryRequired": "Il paese è obbligatorio",
+          "unknownCountry": "Paese sconosciuto: {value}",
+          "postalcodeRequired": "Il codice postale è obbligatorio",
+          "postalcodeMax8": "Il codice postale deve avere al massimo 8 caratteri",
+          "postalcodeFormatExample": "Formato del codice postale non valido. Esempio: {example}",
+          "streetAdditionTooLong": "Il complemento dell'indirizzo supera i 35 caratteri",
+          "streetRequired": "La via è obbligatoria",
+          "streetMaxLength": "La via deve avere al massimo 35 caratteri",
+          "cityRequired": "La città è obbligatoria",
+          "cityMaxLength": "La città deve avere al massimo 35 caratteri",
+          "phoneNumberRequired": "Il numero di telefono è obbligatorio"
+        },
+        "recipient": {
+          "countryRequired": "Il paese è obbligatorio",
+          "unknownCountry": "Paese sconosciuto: {value}",
+          "postalcodeRequired": "Il codice postale è obbligatorio",
+          "postalcodeMax8": "Il codice postale deve avere al massimo 8 caratteri",
+          "postalcodeFormatExample": "Formato del codice postale non valido. Esempio: {example}",
+          "streetAdditionTooLong": "Il complemento dell'indirizzo supera i 35 caratteri",
+          "streetRequired": "La via è obbligatoria",
+          "streetMaxLength": "La via deve avere al massimo 35 caratteri",
+          "cityRequired": "La città è obbligatoria",
+          "cityMaxLength": "La città deve avere al massimo 35 caratteri",
+          "unknownRegion": "Regione USA sconosciuta",
+          "firstNameRequired": "Il nome è obbligatorio",
+          "lastNameRequired": "Il cognome è obbligatorio",
+          "nameMaxLength": "Nome e cognome insieme possono avere al massimo {max} caratteri (spazio incluso)",
+          "phoneNumberRequired": "Il numero di telefono è obbligatorio"
+        },
+        "package": {
+          "missingType": "Pacco {i}: il tipo è obbligatorio",
+          "typeLabel": {
+            "pallet": "Bancale",
+            "package": "Pacco",
+            "document": "Documento"
+          },
+          "palletDimsExceeded": "I bancali possono avere al massimo 200 cm in lunghezza, larghezza e altezza",
+          "palletWeightExceeded": "I bancali possono pesare fino a 450 kg",
+          "docDimsExceeded": "I documenti possono avere al massimo 100 cm in lunghezza, larghezza e altezza",
+          "docWeightExceeded": "I documenti possono pesare fino a 2 kg",
+          "pkgDimsExceeded": "I pacchi possono avere al massimo 300 cm in lunghezza e larghezza, e 200 cm in altezza",
+          "pkgWeightExceeded": "I pacchi possono pesare fino a 70 kg",
+          "unknownType": "Tipo di pacco sconosciuto: {type}",
+          "lengthRequired": "La lunghezza è obbligatoria",
+          "lengthMin": "La lunghezza minima è 1 cm",
+          "lengthMaxPallet": "La lunghezza massima del bancale è 200 cm",
+          "lengthMax": "La lunghezza massima è {max} cm",
+          "widthRequired": "La larghezza è obbligatoria",
+          "widthMin": "La larghezza minima è 1 cm",
+          "widthMaxPallet": "La larghezza massima del bancale è 200 cm",
+          "widthMax": "La larghezza massima è {max} cm",
+          "heightRequired": "L'altezza è obbligatoria",
+          "heightMin": "L'altezza minima è 1 cm",
+          "heightMaxPallet": "L'altezza massima del bancale è 200 cm",
+          "heightMax": "L'altezza massima è {max} cm",
+          "weightRequired": "Il peso è obbligatorio",
+          "weightMin": "Il peso minimo è 1 kg",
+          "weightMax": "Il peso massimo per {type} è {max} kg"
+        }
+      }
+    },
+    "D_submitShipmentbase_0": {
+      "validation": {
+        "product": {
+          "missingDescription": "Prodotto {i}: descrizione mancante.",
+          "invalidHsCode": "Prodotto {i}: codice HS non valido, es. 970690.",
+          "quantityTooLow": "Prodotto {i}: la quantità deve essere almeno 1.",
+          "missingOrigin": "Prodotto {i}: paese d'origine mancante o non valido.",
+          "weightTooLow": "Prodotto {i}: il peso deve essere maggiore di 0.",
+          "valueTooLow": "Prodotto {i}: il valore deve essere maggiore di 0.",
+          "missingCurrency": "Prodotto {i}: valuta mancante."
+        },
+        "item": {
+          "descriptionRequired": "La descrizione è obbligatoria.",
+          "descriptionTooLong": "Massimo 100 caratteri consentiti.",
+          "weightRequired": "Il peso è obbligatorio.",
+          "weightMin": "Il peso minimo è 0,01 kg.",
+          "weightMax": "Il peso massimo è 999 kg.",
+          "valueRequired": "Il valore è obbligatorio.",
+          "valueMin": "Il valore minimo è € 0,01.",
+          "valueMax": "Il valore massimo è € 100.000.",
+          "originRequired": "Il paese d'origine è obbligatorio.",
+          "originInvalid": "Usa un codice paese ISO valido (es. NL).",
+          "hsCodeInvalid": "Codice HS non valido, es. 970690."
+        },
+        "insurance": {
+          "valueMin": "Il valore assicurato deve essere maggiore di 0."
+        },
+        "shipmentOptions": {
+          "incotermsGroupDInvalid": "Termine di resa non valido."
+        }
+      }
+    }
+  }
+}

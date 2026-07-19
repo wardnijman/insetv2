@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "comment": "Declaratieve widget-validatieregels (fabriek-BRON). Semantiek 1-op-1 uit v1's generated B_getRates_0.validations + D_submitShipmentbase_0.validations; de engine (src/widget/validation-engine.ts) voert ze uit. Getallen hier zijn de TFF-limieten.",
+  "addressFieldMax": 35,
+  "nameTotalMax": 30,
+  "postalMaxNoFormat": 8,
+  "regionRequiredCountries": ["US", "CA", "AU"],
+  "packageLimits": {
+    "pallet":   { "length": [1, 200], "width": [1, 200], "height": [1, 200], "weight": [1, 450] },
+    "package":  { "length": [1, 300], "width": [1, 300], "height": [1, 200], "weight": [1, 70] },
+    "document": { "length": [1, 100], "width": [1, 100], "height": [1, 100], "weight": [1, 2],
+                  "aggregateDims": { "length": [1, 120], "width": [1, 100], "height": [1, 100] } }
+  },
+  "productLine": {
+    "hsPattern": "^\\d{6,20}$",
+    "descriptionMax": 100,
+    "weight": [0.01, 999],
+    "value": [0.01, 100000]
+  },
+  "shipmentOptions": {
+    "descriptionMax": 100
+  }
+}

@@ -1,7 +1,7 @@
 // Contract van de per-provider WIDGET-laag: wat de UI-componenten van een provider
-// nodig hebben (veld-validators + domeintabellen). Dit is de browser-tegenhanger van
-// de node-kant ProviderIntegration (src/widget/provider-registry.ts) — zelfde principe:
-// provider = parameter, geen hardcoded importpaden in componenten.
+// nodig hebben (veld-/pakket-/grid-validators + domeintabellen). Browser-tegenhanger
+// van de node-kant ProviderIntegration; de invulling komt uit de fabriek-emit
+// (generated/<provider>/widget), semantisch bewaakt door het v1-oracle.
 
 import type { ValidationResult } from "../types/config";
 
@@ -22,7 +22,7 @@ export interface PackageRowLike {
 
 export interface WidgetProviderLayer {
   id: string;
-  /** Domeintabellen (landen, valuta, opties) — fabriek-output. */
+  /** Domeintabellen (landen, valuta, opties, postcode-patronen) — fabriek-output. */
   domain: { countries: string[]; [k: string]: unknown };
   /** Veldnaam -> validator, zoals ValidatedInput/ValidatedSelect ze consumeren. */
   fieldValidators: Record<string, FieldValidator>;
@@ -33,4 +33,8 @@ export interface WidgetProviderLayer {
     height(row: PackageRowLike): ValidationResult | Promise<ValidationResult>;
     weight(row: PackageRowLike): ValidationResult | Promise<ValidationResult>;
   };
+  /** Douane-grid-suite (§4: DE ene strikte product-line-laag) — voor de customs-stap. */
+  gridValidators?: Record<string, (...args: any[]) => ValidationResult | ValidationResult[]>;
+  /** Taalwissel voor validator-messages (v1: setValidationsLanguage). */
+  setLanguage?: (lang: string) => void;
 }

@@ -8,7 +8,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "smoke": "vite build --ssr src/ssr-smoke.ts --outDir dist-ssr --logLevel warn && node dist-ssr/ssr-smoke.js"
+    "smoke": "vite build --ssr src/ssr-smoke.ts --outDir dist-ssr --logLevel warn && node dist-ssr/ssr-smoke.js",
+    "predev": "cd .. && node --experimental-strip-types src/fabriek/compile.ts tff",
+    "precheck": "cd .. && node --experimental-strip-types src/fabriek/compile.ts tff",
+    "prebuild": "cd .. && node --experimental-strip-types src/fabriek/compile.ts tff",
+    "presmoke": "cd .. && node --experimental-strip-types src/fabriek/compile.ts tff"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "6.2.1",

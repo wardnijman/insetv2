@@ -13,6 +13,7 @@
         getCountryOptions,
     } from "../utils/countries";
     import ValidatedSelect from "./selects/ValidatedSelect.svelte";
+    import { persistentFieldValidators } from "../validations/field-validators";
     import type { Writable } from "svelte/store";
     import { writable } from "svelte/store";
     import { currentLang, m } from "../state/messageStore";
@@ -27,7 +28,11 @@
         currentLang.toLowerCase(),
     );
 
-    const mergedFieldValidators = provider.fieldValidators;
+    // v1-merge-volgorde (SenderStepBlock): persistent WINT van generated.
+    const mergedFieldValidators = {
+        ...provider.fieldValidators,
+        ...persistentFieldValidators,
+    };
 
     const regionOptions: Writable<{ value: string; label: string }[]> =
         writable([]);

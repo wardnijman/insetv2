@@ -1,0 +1,1001 @@
+{
+  "source": "v1 B_getRates_0 + D_submitShipmentbase_0 (esbuild-bundel, taal NL)",
+  "cases": [
+    {
+      "id": "b-shipper-country-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Land is verplicht",
+        "path": "shipper.country",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-shipper-country-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-shipper-country-onbekend",
+      "expected": {
+        "valid": false,
+        "message": "Onbekend land: XX",
+        "path": "shipper.country",
+        "reason": "unknown_value"
+      }
+    },
+    {
+      "id": "b-shipper-country-lowercase",
+      "expected": {
+        "valid": false,
+        "message": "Onbekend land: nl",
+        "path": "shipper.country",
+        "reason": "unknown_value"
+      }
+    },
+    {
+      "id": "b-recipient-country-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Land is verplicht",
+        "path": "recipient.country",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-recipient-country-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-geen-land-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Postcode is verplicht",
+        "path": "shipper.postalCode",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-postal-geen-land-gevuld",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-nl-ok-spatie",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-nl-ok-compact",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-nl-fout",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldig postcodeformaat. Voorbeeld: 1234AB",
+        "path": "shipper.postalCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "b-postal-nl-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldig postcodeformaat. Voorbeeld: 1234AB",
+        "path": "shipper.postalCode",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-postal-nl-lowercase",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-de-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-de-kort",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldig postcodeformaat. Voorbeeld: 12345",
+        "path": "shipper.postalCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "b-postal-gb-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-gb-fout",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldig postcodeformaat. Voorbeeld: A1 2BC",
+        "path": "recipient.postalCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "b-postal-pt-ok",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldig postcodeformaat. Voorbeeld: 1234567",
+        "path": "recipient.postalCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "b-postal-ae-geen-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-ae-geen-te-lang",
+      "expected": {
+        "valid": false,
+        "message": "Postcode mag maximaal 8 tekens zijn",
+        "path": "recipient.postalCode",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-postal-us-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-postal-binnenwit-genormaliseerd",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-straat-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Straat is verplicht",
+        "path": "shipper.street",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-straat-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-straat-36",
+      "expected": {
+        "valid": false,
+        "message": "Straat mag maximaal 35 tekens zijn",
+        "path": "shipper.street",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-straat-35",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-toevoeging-36",
+      "expected": {
+        "valid": false,
+        "message": "Straattoevoeging overschrijdt 35 tekens",
+        "path": "shipperAddress.houseNumber",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-toevoeging-leeg",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-plaats-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Plaats is verplicht",
+        "path": "recipient.city",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-plaats-36",
+      "expected": {
+        "valid": false,
+        "message": "Plaats mag maximaal 35 tekens zijn",
+        "path": "recipient.city",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-plaats-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-r-straat-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Straat is verplicht",
+        "path": "recipient.street",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-r-toevoeging-36",
+      "expected": {
+        "valid": false,
+        "message": "Straattoevoeging overschrijdt 35 tekens",
+        "path": "recipient.houseNumber",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-regio-us-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Regio is verplicht voor dit land",
+        "path": "recipient.region",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-regio-us-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-regio-au-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Regio is verplicht voor dit land",
+        "path": "recipient.region",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-regio-nl-leeg",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-telefoon-shipper-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Telefoonnummer is verplicht",
+        "path": "shipper.phoneNumber",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-telefoon-shipper-spatie",
+      "expected": {
+        "valid": false,
+        "message": "Telefoonnummer is verplicht",
+        "path": "shipper.phoneNumber",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-telefoon-recipient-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-telefoon-recipient-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Telefoonnummer is verplicht",
+        "path": "recipient.phoneNumber",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-voornaam-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Voornaam is verplicht",
+        "path": "recipient.firstName",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-voornaam-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-naam-totaal-30-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-naam-totaal-31-fout",
+      "expected": {
+        "valid": false,
+        "message": "Voor- en achternaam samen mogen maximaal 30 tekens zijn (inclusief spatie)",
+        "path": "recipient.firstName",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-achternaam-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Achternaam is verplicht",
+        "path": "recipient.lastName",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-achternaam-totaal-31-fout",
+      "expected": {
+        "valid": false,
+        "message": "Voor- en achternaam samen mogen maximaal 30 tekens zijn (inclusief spatie)",
+        "path": "recipient.lastName",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "b-agg-shipper-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-agg-shipper-slechte-postcode",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldig postcodeformaat. Voorbeeld: 1234AB",
+        "path": "shipper.postalCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "b-agg-shipper-geen-telefoon",
+      "expected": {
+        "valid": false,
+        "message": "Telefoonnummer is verplicht",
+        "path": "shipper.phoneNumber",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-agg-recipient-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-agg-recipient-geen-voornaam",
+      "expected": {
+        "valid": false,
+        "message": "Voornaam is verplicht",
+        "path": "recipient.firstName",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-agg-recipient-us-zonder-regio",
+      "expected": {
+        "valid": false,
+        "message": "Regio is verplicht voor dit land",
+        "path": "recipient.region",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-pkg-agg-ok",
+      "expected": [
+        {
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-zonder-type",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Pakket 1: type is verplicht",
+          "path": "packages[0].type",
+          "reason": "required"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-onbekend-type",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Onbekend pakkettype: krat",
+          "path": "packages[0].type",
+          "reason": "unknown_value"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-pallet-201",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Pallets mogen maximaal 200 cm lang, breed en hoog zijn",
+          "path": "packages[0]",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-pallet-451kg",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Pallets mogen maximaal 450 kg wegen",
+          "path": "packages[0].weight",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-doc-110-lang",
+      "expected": [
+        {
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-doc-3kg",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Documenten mogen maximaal 2 kg wegen",
+          "path": "packages[0].weight",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-pakket-71kg",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Pakketten mogen maximaal 70 kg wegen",
+          "path": "packages[0].weight",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-agg-meerdere",
+      "expected": [
+        {
+          "valid": true
+        },
+        {
+          "valid": false,
+          "message": "Pallets mogen maximaal 450 kg wegen",
+          "path": "packages[1].weight",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "b-pkg-lengte-null",
+      "expected": {
+        "valid": false,
+        "message": "Lengte is verplicht",
+        "path": "packages[].length",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "b-pkg-lengte-0",
+      "expected": {
+        "valid": false,
+        "message": "Minimale lengte is 1 cm",
+        "path": "packages[].length",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-lengte-301",
+      "expected": {
+        "valid": false,
+        "message": "Maximale lengte is 300 cm",
+        "path": "packages[].length",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-lengte-300",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-pkg-lengte-pallet-201",
+      "expected": {
+        "valid": false,
+        "message": "Maximale palletlengte is 200 cm",
+        "path": "packages[].length",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-lengte-doc-110",
+      "expected": {
+        "valid": false,
+        "message": "Maximale lengte is 100 cm",
+        "path": "packages[].length",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-lengte-onbekend-type",
+      "expected": {
+        "valid": false,
+        "message": "Onbekend pakkettype: krat",
+        "path": "packages[].type",
+        "reason": "unknown_value"
+      }
+    },
+    {
+      "id": "b-pkg-breedte-doc-101",
+      "expected": {
+        "valid": false,
+        "message": "Maximale breedte is 100 cm",
+        "path": "packages[].width",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-breedte-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "b-pkg-hoogte-pakket-201",
+      "expected": {
+        "valid": false,
+        "message": "Maximale hoogte is 200 cm",
+        "path": "packages[].height",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-hoogte-pallet-201",
+      "expected": {
+        "valid": false,
+        "message": "Maximale pallethoogte is 200 cm",
+        "path": "packages[].height",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-gewicht-pallet-451",
+      "expected": {
+        "valid": false,
+        "message": "Pallets mogen maximaal 450 kg wegen",
+        "path": "packages[].weight",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-gewicht-doc-3",
+      "expected": {
+        "valid": false,
+        "message": "Maximaal gewicht voor document is 2 kg",
+        "path": "packages[].weight",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-gewicht-pakket-71",
+      "expected": {
+        "valid": false,
+        "message": "Maximaal gewicht voor package is 70 kg",
+        "path": "packages[].weight",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "b-pkg-gewicht-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-item-desc-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Beschrijving is verplicht.",
+        "path": "products[].description",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-item-desc-101",
+      "expected": {
+        "valid": false,
+        "message": "Maximaal 100 tekens toegestaan.",
+        "path": "products[].description",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "d-item-desc-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-item-gewicht-null",
+      "expected": {
+        "valid": false,
+        "message": "Gewicht is verplicht.",
+        "path": "products[].weight",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-item-gewicht-te-licht",
+      "expected": {
+        "valid": false,
+        "message": "Minimumgewicht is 0,01 kg.",
+        "path": "products[].weight",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "d-item-gewicht-te-zwaar",
+      "expected": {
+        "valid": false,
+        "message": "Maximumgewicht is 999 kg.",
+        "path": "products[].weight",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "d-item-gewicht-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-item-gewicht-string",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-item-waarde-null",
+      "expected": {
+        "valid": false,
+        "message": "Waarde is verplicht.",
+        "path": "products[].value",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-item-waarde-0",
+      "expected": {
+        "valid": false,
+        "message": "Minimumwaarde is €0,01.",
+        "path": "products[].value",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "d-item-waarde-te-hoog",
+      "expected": {
+        "valid": false,
+        "message": "Maximumwaarde is €100.000.",
+        "path": "products[].value",
+        "reason": "out_of_range"
+      }
+    },
+    {
+      "id": "d-item-waarde-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-origin-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Herkomstland is verplicht.",
+        "path": "products[].originCountry",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-origin-lowercase-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-origin-3-letters",
+      "expected": {
+        "valid": false,
+        "message": "Gebruik een geldige ISO-landcode, bijvoorbeeld NL.",
+        "path": "products[].originCountry",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "d-hs-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldige HS-code, bijvoorbeeld 970690.",
+        "path": "products[].hsCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "d-hs-5-cijfers",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldige HS-code, bijvoorbeeld 970690.",
+        "path": "products[].hsCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "d-hs-6-cijfers",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-hs-met-punten-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-hs-21-cijfers",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldige HS-code, bijvoorbeeld 970690.",
+        "path": "products[].hsCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "d-hs-letters",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldige HS-code, bijvoorbeeld 970690.",
+        "path": "products[].hsCode",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "d-products-ok",
+      "expected": [
+        {
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "d-products-geen-desc",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: beschrijving ontbreekt.",
+          "path": "products[0].description",
+          "reason": "required"
+        }
+      ]
+    },
+    {
+      "id": "d-products-slechte-hs",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: ongeldige HS-code, bijvoorbeeld 970690.",
+          "path": "products[0].hsCode",
+          "reason": "invalid_format"
+        }
+      ]
+    },
+    {
+      "id": "d-products-geen-origin",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: herkomstland ontbreekt of is ongeldig.",
+          "path": "products[0].originCountry",
+          "reason": "invalid_format"
+        }
+      ]
+    },
+    {
+      "id": "d-products-gewicht-0",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: gewicht moet groter zijn dan 0.",
+          "path": "products[0].weight",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "d-products-waarde-0",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: waarde moet groter zijn dan 0.",
+          "path": "products[0].value",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "d-products-geen-valuta",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: valuta ontbreekt.",
+          "path": "products[0].currency",
+          "reason": "required"
+        }
+      ]
+    },
+    {
+      "id": "d-products-assignments-0",
+      "expected": [
+        {
+          "valid": false,
+          "message": "Product Product 1: aantal moet minimaal 1 zijn.",
+          "path": "products[0].quantity",
+          "reason": "out_of_range"
+        }
+      ]
+    },
+    {
+      "id": "d-products-assignments-2",
+      "expected": [
+        {
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "d-opties-desc-leeg",
+      "expected": {
+        "valid": false,
+        "message": "Beschrijving is verplicht.",
+        "path": "shippingOptions.description",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-opties-desc-101",
+      "expected": {
+        "valid": false,
+        "message": "Maximaal 100 tekens toegestaan.",
+        "path": "shippingOptions.description",
+        "reason": "max_length"
+      }
+    },
+    {
+      "id": "d-opties-desc-ok",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-totaal-0-export",
+      "expected": {
+        "valid": false,
+        "message": "Waarde is verplicht.",
+        "path": "shippingOptions.totalValue",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-totaal-ok-export",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-totaal-0-eu",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-incoterm-dpu-export",
+      "expected": {
+        "valid": false,
+        "message": "Ongeldige leveringsvoorwaarde.",
+        "path": "shippingOptions.incoterm",
+        "reason": "unknown_value"
+      }
+    },
+    {
+      "id": "d-incoterm-dap-export",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-incoterm-ddp-export",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-incoterm-dpu-eu",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-verzend-origin-leeg-export",
+      "expected": {
+        "valid": false,
+        "message": "Herkomstland is verplicht.",
+        "path": "shippingOptions.originCountry",
+        "reason": "required"
+      }
+    },
+    {
+      "id": "d-verzend-origin-lowercase-export",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "d-verzend-origin-3letters-export",
+      "expected": {
+        "valid": false,
+        "message": "Gebruik een geldige ISO-landcode, bijvoorbeeld NL.",
+        "path": "shippingOptions.originCountry",
+        "reason": "invalid_format"
+      }
+    },
+    {
+      "id": "d-verzend-origin-leeg-eu",
+      "expected": {
+        "valid": true
+      }
+    }
+  ]
+}

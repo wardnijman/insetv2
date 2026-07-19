@@ -9,6 +9,7 @@
     import type { WidgetProviderLayer } from "../providers/types";
     import ValidatedInput from "./inputs/ValidatedInput.svelte";
     import ValidatedSelect from "./selects/ValidatedSelect.svelte";
+    import { persistentFieldValidators } from "../validations/field-validators";
     import {
         countriesRequiringRegion,
         getCountryOptions,
@@ -38,7 +39,11 @@
         currentLang.toLowerCase(),
     );
 
-    const mergedFieldValidators = provider.fieldValidators;
+    // v1-merge-volgorde (ReceiverStepBlock): generated WINT van persistent.
+    const mergedFieldValidators = {
+        ...persistentFieldValidators,
+        ...provider.fieldValidators,
+    };
 
     const regionOptions: Writable<{ value: string; label: string }[]> =
         writable([]);

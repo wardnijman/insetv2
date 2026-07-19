@@ -7,7 +7,7 @@
 //
 // Gebruik:  npm run compile [portaal]   (default 'tff')
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { primitives } from "../primitives/index.ts";
 import type { Primitive } from "../primitives/index.ts";
 import { validateFields } from "./schema.ts";
@@ -76,3 +76,31 @@ writeFileSync(outPath, src);
 const nArr = Object.keys(cfg.arrays ?? {}).length;
 console.log(`fabriek: ${portal}/${cfg.flow} -> ${outPath}`);
 console.log(`  ${Object.keys(cfg.map).length} map-velden${nArr ? ` + ${nArr} array(s)` : ""} · ${known.size} transforms beschikbaar · config-hash ${hash}`);
+
+// ---- widget-laag (indien geconfigureerd): regels + domein + messages -> generated -
+// Zelfde principe als de transform: bron = declaratieve config, emit = PURE LIJM die
+// de gedeelde engine aanroept. Data wordt GEÏNLINED zodat het generated-bestand
+// self-contained is (importeerbaar door node én vite, geen JSON-import-attributes).
+if (existsSync(`${base}/widget/validation.json`)) {
+  const rulesJson = readFileSync(`${base}/widget/validation.json`, "utf8").trim();
+  const domainJson = readFileSync(`${base}/widget/domain.json`, "utf8").trim();
+  const messagesJson = readFileSync(`${base}/widget/messages.json`, "utf8").trim();
+  const widgetHash = hashConfig(JSON.parse(rulesJson));
+
+  const widgetSrc = `// AUTO-GEGENEREERD door de fabriek — NIET met de hand aanpassen (regeneratie overschrijft dit).
+// Bron: ${base}/widget/{validation,domain,messages}.json · compiler v${COMPILER_VERSION} · regels-hash ${widgetHash}
+import { buildWidgetValidators } from "../../../src/widget/validation-engine.ts";
+import type { WidgetValidationRules } from "../../../src/widget/validation-engine.ts";
+
+const rules = ${rulesJson} as unknown as WidgetValidationRules;
+
+export const domain = ${domainJson};
+
+const messages = ${messagesJson};
+
+export const widgetLayer = buildWidgetValidators({ rules, domain: domain as any, messages });
+`;
+  mkdirSync(`generated/${portal}/widget`, { recursive: true });
+  writeFileSync(`generated/${portal}/widget/index.ts`, widgetSrc);
+  console.log(`fabriek: ${portal}/widget-laag -> generated/${portal}/widget/index.ts · regels-hash ${widgetHash}`);
+}
