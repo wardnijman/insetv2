@@ -501,11 +501,25 @@
         return;
       }
     } else {
-      // TODO(order-flow): upstream annuleren loopt in v2 via de proxy/pool (v1 belde
-      // archiveShipment.php rechtstreeks; die route bestaat hier nog niet). Let op de
-      // v1-les: succes alléén op body-inspectie, niet op HTTP 200.
-      toast.error(m.orderOverview.cancelShipment.notYetAllowed);
-      return;
+      // Upstream annuleren loopt in v2 via de proxy/pool. De v1-les zit nu SERVERSIDE:
+      // /api/shipments/delete inspecteert de body en geeft 409 als de zending niet
+      // annuleerbaar was (verse labels) — een HTTP 200 alléén is nooit "gelukt".
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/shipments/delete`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, shipmentRef: ref }),
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok || !body?.ok) {
+          toast.error(body?.message ?? m.orderOverview.cancelShipment.notYetAllowed);
+          return;
+        }
+      } catch {
+        toast.error(m.orderOverview.cancelShipment.notYetAllowed);
+        return;
+      }
+      // Geslaagd geannuleerd: val door naar de lokale status-reset hieronder.
     }
     const shipment = {
       status: "CANCELED",

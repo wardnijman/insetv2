@@ -79,6 +79,18 @@ function mockSubmit(session: Session, flow: string, payload: Record<string, unkn
       body: { ok: true, plt: 1, sessionkey: String(payload["sessionkey"] ?? "") },
     };
   }
+  if (flow === "archiveShipment") {
+    // v1-LES: TFF's archiveShipment.php geeft HTTP 200 óók als de zending NIET
+    // verwijderd is (verse labels: 200 + error-body). v1's deleteShipment las alleen
+    // de HTTP-status en meldde dus vals succes. De mock reproduceert beide gevallen
+    // zodat de proxy op de BODY moet inspecteren: ref eindigend op "-live" = de
+    // niet-annuleerbare (verse) zending -> 200 met error-body.
+    const ref = String(payload["shipmentRef"] ?? "");
+    if (ref.endsWith("-live")) {
+      return { status: 200, loggedOut: false, body: { error: "Label already produced; cannot be archived." } };
+    }
+    return { status: 200, loggedOut: false, body: { ok: true, archived: ref } };
+  }
   if (flow.startsWith("submitShipment")) {
     mockShipmentSeq += 1;
     return {

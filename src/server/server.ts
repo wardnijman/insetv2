@@ -15,7 +15,10 @@ import { SessionPool } from "../runtime/pool.ts";
 import { loadAdapter, runFlow } from "../runtime/execute.ts";
 import { assertBookable } from "../runtime/capabilities.ts";
 import { startRun, record, finishRun } from "../observability/trace.ts";
-import { tenantDb, recordShipment, recordMail } from "../db/tenant-db.ts";
+import {
+  tenantDb, recordShipment, recordMail,
+  upsertOrder, setOrderShipment, listOrders, recordError,
+} from "../db/tenant-db.ts";
 import { US_STATES, CA_PROVINCES } from "./regions.ts";
 import {
   buildPaperlessInvoiceRequestFromShipment,
@@ -163,7 +166,9 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   }
 
   const url = new URL(req.url ?? "/", "http://localhost");
-  const m = /^\/t\/([^/]+)(\/api\/.*)$/.exec(url.pathname);
+  // Tenant-scoping via het pad; het pad-restant (route) beslist zelf — /api/* én de
+  // integratie-endpoints (/integrations/v1/documents/label, a6-cropper).
+  const m = /^\/t\/([^/]+)(\/.+)$/.exec(url.pathname);
   if (!m) return json(res, 404, { error: "unknown_route" });
   const [, tenantId, route] = m;
 
@@ -370,11 +375,94 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
 
     if (route === "/api/orders" && req.method === "GET") {
-      // Orderbron van de OrderOverview (order-overview-slice). Interim: de webshop-
-      // sync (Exact/Shopify/…) is nog niet bedraad in v2 — lege lijst laat de widget
-      // netjes de lege-staat tonen. userId/q/tokens komen al mee als query-params
-      // zodat de echte implementatie zonder client-wijziging kan filteren.
+      // Orderbron van de OrderOverview. De webshop-sync (Exact/Shopify/…) is nog niet
+      // bedraad, maar manueel gemaakte orders + geboekte/geannuleerde shipment-statussen
+      // persisteren nu WEL per tenant (tenant-DB) i.p.v. alleen in de browser-store —
+      // dus de overview toont echt wat er gebeurd is, ook na herladen.
+      const userId = url.searchParams.get("userId") ?? "";
+      return json(res, 200, listOrders(tenantId, userId));
+    }
+
+    if (route === "/api/orders/set" && req.method === "POST") {
+      // v1: persist een (manueel gemaakte) order.
+      const body = JSON.parse((await readBody(req)) || "{}");
+      if (body.order?.orderId) upsertOrder(tenantId, String(body.userId ?? ""), body.order);
+      return json(res, 200, { ok: true });
+    }
+
+    if (route === "/api/orders/shipment/set" && req.method === "POST") {
+      // v1: zet alleen de shipment-status van een order (geboekt/mislukt/geannuleerd).
+      const body = JSON.parse((await readBody(req)) || "{}");
+      setOrderShipment(tenantId, String(body.userId ?? ""), String(body.orderPlatform ?? "manual"), String(body.orderId ?? ""), body.shipment ?? {});
+      return json(res, 200, { ok: true });
+    }
+
+    if (route === "/api/orders/sync-now" && req.method === "POST") {
+      // Interim: geen live webshop-sync — nette 0-synced respons zodat de UI-knop werkt.
+      return json(res, 200, { ok: true, synced: 0, note: "webshop-sync nog niet bedraad" });
+    }
+
+    if (route === "/api/error/set" && req.method === "POST") {
+      // Foutlog per tenant (v1: markShipmentAsFailed → backend). Navraagbaar in de DB.
+      const body = JSON.parse((await readBody(req)) || "{}");
+      recordError(tenantId, { userId: String(body.userId ?? ""), token: String(body.token ?? ""), error: String(body.error ?? ""), shipment: body.shipment });
+      return json(res, 200, { ok: true });
+    }
+
+    if (route === "/api/widget-init" && req.method === "GET") {
+      // Boot-payload: hier alleen een healthy ack; prefs/orders lopen via hun eigen routes.
+      return json(res, 200, { ok: true, ready: true });
+    }
+
+    if (route === "/api/shipments/delete" && req.method === "POST") {
+      // ANNULEREN — de v1-les in code: TFF's archiveShipment.php geeft 200 óók als het
+      // NIET lukte (verse labels: 200 + error-body). Succes wordt hier daarom bepaald
+      // door BODY-INSPECTIE, niet door de HTTP-status. Live blijft geblokkeerd:
+      // TFF-delete vergt CS-goedkeuring (geen self-service).
+      if ((process.env.INSET_ADAPTER ?? "mock") === "live") {
+        return json(res, 403, { error: "delete_not_self_service", message: "Annuleren bij TFF vergt CS-goedkeuring — niet automatisch." });
+      }
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const portal = tenant.providers[0];
+      const pool = await getPool(portal);
+      const resp = await runPrebuilt(pool, tenantId, portal, "archiveShipment", { shipmentRef: String(body.shipmentRef ?? "") });
+      // BODY-INSPECTIE: alleen een expliciete ok telt als succes; een error-body =
+      // mislukt, ongeacht de 200 (v1's deleteShipment rapporteerde hier vals succes).
+      if (resp && resp.ok === true) {
+        return json(res, 200, { ok: true, archived: resp.archived });
+      }
+      return json(res, 409, { ok: false, error: "not_archivable", message: String(resp?.error ?? "Zending kon niet geannuleerd worden.") });
+    }
+
+    if (route === "/api/labels/list" && req.method === "GET") {
+      // Interim: geen aparte label-store; de geboekte zendingen met een ref zijn de
+      // basket-inhoud. Leeg is een geldige staat (nog niets geboekt).
       return json(res, 200, []);
+    }
+
+    if ((route === "/api/labels/batch" || route === "/api/labels/merge") && req.method === "POST") {
+      // Interim: labels samenvoegen levert de mock-PDF (base64) — de print-flow kan
+      // daarmee end-to-end draaien. Live: samenvoegen gebeurt portaal-/integratie-zijdig.
+      const portal = tenant.providers[0];
+      const pool = await getPool(portal);
+      const pdf = await runPrebuilt(pool, tenantId, portal, "paperlessInvoice", {});
+      return json(res, 200, { ok: true, pdfBase64: pdf?.pdfBase64 ?? "", url: `data:application/pdf;base64,${pdf?.pdfBase64 ?? ""}` });
+    }
+
+    if (route === "/integrations/v1/documents/label" && req.method === "GET") {
+      // Label-document ophalen (a6-cropper-endpoint, memory). Interim: mock-PDF; het
+      // ?format=a6-contract blijft zodat de echte crop-implementatie plug-in kan.
+      const portal = tenant.providers[0];
+      const pool = await getPool(portal);
+      const pdf = await runPrebuilt(pool, tenantId, portal, "paperlessInvoice", {});
+      return json(res, 200, { documentResponse: { labelFormat: url.searchParams.get("format") ?? "a4", base64: pdf?.pdfBase64 ?? "", contentType: "application/pdf" } });
+    }
+
+    if (route === "/api/labels/events" && req.method === "GET") {
+      // Label-voortgang loopt in v1 via Server-Sent Events. Interim niet bedraad;
+      // 501 met een duidelijk contract i.p.v. een half-open stream (de basket toont
+      // dan statisch de geboekte labels). TODO(labels-sse).
+      return json(res, 501, { error: "sse_not_wired", message: "Live label-voortgang (SSE) is nog niet bedraad." });
     }
 
     if (route === "/api/service-points" && req.method === "GET") {

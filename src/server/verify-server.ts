@@ -172,10 +172,56 @@ check("paperless: 422 zonder paperlessInvoice-blok (fail-closed)", pltBad.status
 const sp = (await (await fetch(`${base}/api/service-points?postalCode=1011AB`)).json()) as unknown[];
 check("service-points: lege lijst (interim)", Array.isArray(sp) && sp.length === 0);
 
-const ord = (await (await fetch(`${base}/api/orders?userId=u1&q=&tokens=%5B%5D`)).json()) as unknown[];
-check("orders: lege lijst (interim, order-overview-slice)", Array.isArray(ord) && ord.length === 0);
+const ordEmpty = (await (await fetch(`${base}/api/orders?userId=u-fresh`)).json()) as unknown[];
+check("orders: lege lijst voor een verse gebruiker", Array.isArray(ordEmpty) && ordEmpty.length === 0);
 
-// 7) onbekende tenant faalt gesloten
+// 7) order-persistentie: manuele order + shipment-status persisteren en teruglezen
+await fetch(`${base}/api/orders/set`, {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u1", order: { orderId: "ORD-1", orderPlatform: "manual", manuallyCreated: true, orderStatus: "processing" } }),
+});
+await fetch(`${base}/api/orders/shipment/set`, {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u1", orderId: "ORD-1", orderPlatform: "manual", shipment: { status: "CREATED", forwarderRef: "80812345" } }),
+});
+const ordList = (await (await fetch(`${base}/api/orders?userId=u1`)).json()) as any[];
+check("orders: manuele order + shipment-status teruggelezen (persistent)",
+  ordList.length === 1 && ordList[0].orderId === "ORD-1" && ordList[0].shipment?.status === "CREATED");
+
+// error/set + sync-now + widget-init
+const errRes = await fetch(`${base}/api/error/set`, {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u1", error: "boom", token: "t1", shipment: {} }),
+});
+check("error/set: 200 + gelogd", errRes.status === 200 && (await errRes.json()).ok === true);
+const syncRes = (await (await fetch(`${base}/api/orders/sync-now`, { method: "POST", body: "{}" })).json()) as any;
+check("sync-now: 200 + synced-count (interim)", syncRes.ok === true && syncRes.synced === 0);
+const initRes = (await (await fetch(`${base}/api/widget-init?userId=u1`)).json()) as any;
+check("widget-init: ready ack", initRes.ready === true);
+
+// 7b) ANNULEREN met body-inspectie (de v1-les): archiveerbaar vs vers label
+const delOk = (await (
+  await fetch(`${base}/api/shipments/delete`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: "u1", shipmentRef: "80812345" }),
+  })
+).json()) as any;
+check("annuleren: archiveerbare zending → ok", delOk.ok === true);
+const delRes = await fetch(`${base}/api/shipments/delete`, {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userId: "u1", shipmentRef: "80899999-live" }),
+});
+const delBody = (await delRes.json()) as any;
+// De mock geeft 200 + error-body; de proxy MOET dat als mislukt zien (v1 zag vals succes).
+check("annuleren: vers label (200 + error-body) → 409, GEEN vals succes", delRes.status === 409 && delBody.ok !== true);
+
+// labels + label-document (mock-PDF via de pool)
+const merge = (await (await fetch(`${base}/api/labels/merge`, { method: "POST", body: "{}" })).json()) as any;
+check("labels/merge: mock-PDF (base64 %PDF)", Buffer.from(String(merge.pdfBase64 ?? ""), "base64").toString("latin1").startsWith("%PDF"));
+const doc = (await (await fetch(`${base}/integrations/v1/documents/label?url=x&format=a6`)).json()) as any;
+check("label-document: a6-formaat-contract behouden + PDF", doc.documentResponse?.labelFormat === "a6" && Buffer.from(String(doc.documentResponse?.base64 ?? ""), "base64").toString("latin1").startsWith("%PDF"));
+
+// 8) onbekende tenant faalt gesloten
 const bad = await fetch(`http://127.0.0.1:${port}/t/bestaat-niet/api/rates`, { method: "POST", body: "{}" });
 check("onbekende tenant → 404", bad.status === 404);
 
