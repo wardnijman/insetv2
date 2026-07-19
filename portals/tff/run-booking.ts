@@ -119,10 +119,25 @@ async function doOne(idx: number, dryRun: boolean) {
   return outcome;
 }
 
+const LIVE_ACK = "ik-weet-dat-dit-geld-kost";
+
 async function main() {
   const mode = process.argv[2] ?? "dry";
   const count = Math.max(1, Math.min(3, parseInt(process.argv[3] ?? "2", 10) || 2));
-  const dryRun = mode !== "book";
+  let dryRun = mode !== "book";
+
+  // DERDE, ONAFHANKELIJKE REM (naast de twee capability-guards): een echte boeking
+  // kost geld en verse DPD-labels zijn NIET annuleerbaar. `book` alléén is niet genoeg;
+  // de env-ack moet er ook zijn. Ontbreekt die, dan degradeert de runner naar DRY.
+  if (!dryRun && process.env.INSET_LIVE_BOOKING_ACK !== LIVE_ACK) {
+    console.log("############################################################");
+    console.log("# GEWEIGERD: 'book' zonder bevestiging.");
+    console.log(`#   Zet INSET_LIVE_BOOKING_ACK="${LIVE_ACK}" om écht te boeken.`);
+    console.log("#   Een boeking kost geld; verse DPD-labels zijn niet annuleerbaar.");
+    console.log("#   -> Val terug op DRY RUN (niets wordt geboekt).");
+    console.log("############################################################");
+    dryRun = true;
+  }
 
   console.log("############################################################");
   console.log(`# Inset v2 — LIVE TFF booking runner (DPD Classic NL->NL)`);
