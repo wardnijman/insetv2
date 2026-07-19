@@ -1,0 +1,20 @@
+{
+  "shipmentOptions_incotermsGroupD": {
+    "onlyShowIf": "isNonEUExportImport"
+  },
+  "shipmentOptions_totalShipmentValue": {
+    "onlyShowIf": "isNonEUExportImport"
+  },
+  "shipmentOptions_shipmentOriginCountry": {
+    "onlyShowIf": "isNonEUExportImport"
+  },
+  "invoice": {
+    "onlyShowIf": "isNonEUExportImport"
+  },
+  "customsDocuments": {
+    "onlyShowIf": "isNonEUExportImport"
+  },
+  "factuuraanwezig": {
+    "onlyShowIf": "isNonEUExportImport"
+  }
+}

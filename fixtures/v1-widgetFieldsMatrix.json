@@ -1,0 +1,751 @@
+{
+  "27171104": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "32021750": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "72811592": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "111908712": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "135325400": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "217005830": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "393921495": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "442310638": [
+    "recipientAddress_region",
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "497951451": [
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "558668459": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "574342251": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "628849939": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "775541652": [
+    "recipientAddress_region",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "948620089": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "959934416": [
+    "recipientAddress_region",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1061716540": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1145785706": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1400054112": [
+    "recipientAddress_region",
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1454604416": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1460749748": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1612327714": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1653135963": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1654268151": [
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1812446522": [
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1922455447": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1975910567": [
+    "shipperAddress_region",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "2026512550": [
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1146971588": [
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1241056497": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1281894720": [
+    "shipperAddress_region",
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1328167426": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1366428086": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1557727170": [
+    "recipientAddress_region",
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1620669534": [
+    "shipperAddress_region",
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1636775895": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1700070845": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1794470953": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1810608349": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1870792222": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1974166173": [
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-198504745": [
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-2001157503": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-2033715028": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-2073224969": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-2090471957": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-2091149229": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-257346344": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-257829467": [
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-302587119": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-430154279": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-444177803": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-48777540": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-494501957": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-604517445": [
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-698746701": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-748767338": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-772310378": [
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-778560682": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-852076929": [
+    "shipmentOptions_chosenRate_accessPoints",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-984753034": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_deliveryInstructions",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1100307470": [
+    "invoice",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1101920692": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1536656177": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-154098199": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1626906863": [
+    "invoice",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1641791328": [
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-334833086": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-870077129": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-893538593": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-913223118": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-965229281": [
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1218564071": [
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1575267850": [
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "1611537182": [
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "921675397": [
+    "recipientAddress_company",
+    "shipmentOptions_registrationNumberShipper",
+    "shipmentOptions_registrationNumberRecipient",
+    "shipmentOptions_exportReason",
+    "products",
+    "shipmentOptions_insuranceValue",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ],
+  "-1531746242": [
+    "recipientAddress_region",
+    "shipmentOptions_carrierAccountNumber",
+    "shipmentOptions_insuranceValue",
+    "invoice",
+    "shipmentOptions_signatureRequired",
+    "shipmentOptions_totalShipmentValue",
+    "shipmentOptions_incotermsGroupD",
+    "shipmentOptions_description",
+    "shipmentOptions_invoiceRef"
+  ]
+}

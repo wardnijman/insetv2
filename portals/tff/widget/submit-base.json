@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "forceInAllVariants": [
+    "leveringscondities",
+    "waardevangoederen",
+    "factuurreferentie",
+    "goederenomschrijving"
+  ],
+  "fields": {
+    "plugtech_source": {
+      "source": "source",
+      "transform": "1-to-1"
+    },
+    "accesspoint": {
+      "source": "shipmentOptions.chosenRate.accessPoints",
+      "partial": true,
+      "transform": "access-points-to-chosen-id"
+    },
+    "accesspoint_name": {
+      "source": "shipmentOptions.chosenRate.accessPoints",
+      "partial": true,
+      "transform": "access-points-to-name"
+    },
+    "accesspoint_address": {
+      "source": "shipmentOptions.chosenRate.accessPoints",
+      "partial": true,
+      "transform": "access-points-to-address"
+    },
+    "accesspoint_city": {
+      "source": "shipmentOptions.chosenRate.accessPoints",
+      "partial": true,
+      "transform": "access-points-to-city"
+    },
+    "accesspoint_zip": {
+      "source": "shipmentOptions.chosenRate.accessPoints",
+      "partial": true,
+      "transform": "access-points-to-postal-code"
+    },
+    "accesspoint_country": {
+      "source": "shipmentOptions.chosenRate.accessPoints",
+      "partial": true,
+      "transform": "access-points-to-country"
+    },
+    "staat": {
+      "source": "shipperAddress.region",
+      "partial": true,
+      "transform": "if-us-do-us-region-to-two-state-code-else-AL"
+    },
+    "staath": {
+      "source": "shipperAddress.region",
+      "partial": true,
+      "transform": "if-us-do-us-region-to-two-state-code-else-AL"
+    },
+    "staat2": {
+      "source": "recipientAddress.region",
+      "partial": true,
+      "transform": "if-us-do-us-region-to-two-state-code-else-AL"
+    },
+    "recipient_private_individual": {
+      "source": "recipientAddress",
+      "partial": true,
+      "transform": "recipient-to-is-private-individual"
+    },
+    "staat2h": {
+      "source": "recipientAddress.region",
+      "partial": true,
+      "transform": "if-us-do-us-region-to-two-state-code-else-AL"
+    },
+    "vsstates2": {
+      "source": "recipientAddress",
+      "transform": "recipient-address-to-vsstates"
+    },
+    "canadastates2": {
+      "source": "recipientAddress",
+      "transform": "recipient-address-to-canadastates"
+    },
+    "registration_number_type_shipper": {
+      "partial": true
+    },
+    "registration_number_shipper": {
+      "source": "shipmentOptions.registrationNumberShipper",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "registration_number_type_recipient": {
+      "partial": true
+    },
+    "registration_number_recipient": {
+      "source": "shipmentOptions.registrationNumberRecipient",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "toggle-account-number": {
+      "source": "shipmentOptions.carrierAccountNumber",
+      "partial": true,
+      "transform": "carrier-object-to-on-or-nothing"
+    },
+    "carrier-account-number": {
+      "source": "shipmentOptions.carrierAccountNumber",
+      "partial": true,
+      "transform": "carrier-object-to-account-number"
+    },
+    "carrier-account-number-country": {
+      "source": "shipmentOptions.carrierAccountNumber",
+      "partial": true,
+      "transform": "carrier-object-to-country-code"
+    },
+    "carrier-account-number-postalcode": {
+      "source": "shipmentOptions.carrierAccountNumber",
+      "partial": true,
+      "transform": "carrier-object-to-postal-code"
+    },
+    "line_item_export_reason": {
+      "source": "shipmentOptions.exportReason",
+      "partial": true,
+      "transform": "map-export-reason"
+    },
+    "line-item[][CommodityCode]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-hscode"
+    },
+    "line-item[][Quantity]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-quantity"
+    },
+    "line-item[][QuantityUnitOfMeasurement]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-unit-of-measurement"
+    },
+    "line-item[][NetWeight]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-netweight"
+    },
+    "line-item[][GrossWeight]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-grossweight"
+    },
+    "line-item[][UnitPrice]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-unit-price"
+    },
+    "line-item[][ManufacturingCountryCode]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-manufacturing-country-code"
+    },
+    "line-item[][ItemDescription]": {
+      "source": "products",
+      "partial": true,
+      "transform": "product-to-item-description"
+    },
+    "aanvullendeverzekering": {
+      "source": "shipmentOptions.insuranceValue",
+      "partial": true,
+      "transform": "insurance-on-or-off"
+    },
+    "invoice_uploaded_status": {
+      "source": "invoice",
+      "partial": true,
+      "transform": "invoice-to-status"
+    },
+    "file_invoice": {
+      "source": "invoice",
+      "partial": true,
+      "transform": "invoice-to-binary"
+    },
+    "factuuraanwezig": {
+      "source": "shipmentOptions.factuurAanwezig",
+      "transform": "aanwezig-ja-nee"
+    },
+    "land": {
+      "source": "shipperAddress.country",
+      "transform": "1-to-1"
+    },
+    "postcode": {
+      "source": "shipperAddress.postalCode",
+      "transform": "only-alphanumeric"
+    },
+    "huisnummer": {
+      "source": "shipperAddress.street[1]",
+      "transform": "1-to-1-or-dash"
+    },
+    "straat": {
+      "source": "shipperAddress.street[0]",
+      "transform": "1-to-1"
+    },
+    "adres_line2": {},
+    "plaats": {
+      "source": "shipperAddress.city",
+      "transform": "1-to-1"
+    },
+    "land2": {
+      "source": "recipientAddress.country",
+      "transform": "1-to-1"
+    },
+    "postcode2": {
+      "source": "recipientAddress.postalCode",
+      "transform": "only-alphanumeric"
+    },
+    "huisnummer2": {
+      "source": "recipientAddress.street[1]",
+      "transform": "1-to-1-or-dash"
+    },
+    "straat2": {
+      "source": "recipientAddress.street[0]",
+      "transform": "1-to-1"
+    },
+    "adres2_line2": {},
+    "plaats2": {
+      "source": "recipientAddress.city",
+      "transform": "1-to-1"
+    },
+    "contactpersoon2": {
+      "source": "recipientAddress",
+      "transform": "get-full-name"
+    },
+    "telmob2": {
+      "source": "recipientAddress.phoneNumber",
+      "transform": "1-to-1"
+    },
+    "email2": {
+      "source": "recipientAddress.email",
+      "transform": "1-to-1"
+    },
+    "naam": {
+      "source": "shipperAddress",
+      "transform": "get-company-name"
+    },
+    "landh": {
+      "source": "shipperAddress.country",
+      "transform": "1-to-1"
+    },
+    "postcodeh": {
+      "source": "shipperAddress.postalCode",
+      "transform": "only-alphanumeric"
+    },
+    "contactpersoon": {
+      "source": "shipperAddress",
+      "transform": "get-full-name"
+    },
+    "telmob": {
+      "source": "shipperAddress.phoneNumber",
+      "transform": "1-to-1"
+    },
+    "email": {
+      "source": "shipperAddress.email",
+      "transform": "1-to-1"
+    },
+    "opmerking": {},
+    "laadreferentie": {},
+    "isprivateaddress2": {
+      "source": "recipientAddress.company",
+      "transform": "company-to-is-private"
+    },
+    "naam2": {
+      "source": "recipientAddress",
+      "transform": "get-company-name"
+    },
+    "land2h": {
+      "source": "recipientAddress.country",
+      "transform": "1-to-1"
+    },
+    "postcode2h": {
+      "source": "recipientAddress.postalCode",
+      "transform": "only-alphanumeric"
+    },
+    "opmerking2": {
+      "source": "shipmentOptions.deliveryInstructions",
+      "partial": true,
+      "transform": "1-to-1-or-dash"
+    },
+    "deliveryLocation": {
+      "source": "shipmentOptions.deliveryInstructions",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "losreferentie": {},
+    "avvalue": {
+      "source": "shipmentOptions.insuranceValue",
+      "transform": "1-to-1"
+    },
+    "laadklepLaden": {
+      "source": "shipmentOptions.truckShipmentInfo.shipperTaillift",
+      "transform": "bool-on-or-off"
+    },
+    "laadklepLossen": {
+      "source": "shipmentOptions.truckShipmentInfo.recipientTaillift",
+      "transform": "bool-on-or-off"
+    },
+    "bakwagenLaden": {
+      "source": "shipmentOptions.truckShipmentInfo.shipperVehicle",
+      "transform": "box-truck-on-or-off"
+    },
+    "bakwagenLossen": {
+      "source": "shipmentOptions.truckShipmentInfo.recipientVehicle",
+      "transform": "box-truck-on-or-off"
+    },
+    "requirePod": {
+      "source": "shipmentOptions.signatureRequired",
+      "transform": "signature-on-or-off"
+    },
+    "typePod": {
+      "source": "shipmentOptions.signatureRequired",
+      "partial": true,
+      "transform": "map-signature-type"
+    },
+    "landvanoorsprong": {
+      "source": "shipmentOptions.shipmentOriginCountry",
+      "transform": "1-to-1"
+    },
+    "waardevangoederen": {
+      "source": "shipmentOptions.totalShipmentValue",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "valuta": {},
+    "leveringscondities": {
+      "source": "shipmentOptions.incotermsGroupD",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "goodsDescriptionOption": {},
+    "goederenomschrijving": {
+      "source": "shipmentOptions.description",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "factuurreferentie": {
+      "source": "shipmentOptions.invoiceRef",
+      "partial": true,
+      "transform": "1-to-1"
+    },
+    "upload_transit_docs": {
+      "source": "customsDocuments",
+      "partial": true,
+      "transform": "customs-documents-to-transit-flag"
+    },
+    "file_customs[]": {
+      "source": "customsDocuments",
+      "partial": true,
+      "transform": "file-array-to-binary"
+    },
+    "incotermsSurcharge": {},
+    "private_address_surcharge_value": {},
+    "totalprice": {},
+    "calc": {
+      "source": "shipmentOptions.chosenRate.price",
+      "transform": "1-to-1"
+    },
+    "calc2": {
+      "source": "shipmentOptions.chosenRate.price",
+      "transform": "1-to-1"
+    }
+  }
+}

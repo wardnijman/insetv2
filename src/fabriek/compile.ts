@@ -87,8 +87,30 @@ if (existsSync(`${base}/widget/validation.json`)) {
   const messagesJson = readFileSync(`${base}/widget/messages.json`, "utf8").trim();
   const widgetHash = hashConfig(JSON.parse(rulesJson));
 
+  // Submit-laag (route 2): base-veldstel + varianten + matrices, indien geconfigureerd.
+  const hasSubmit = existsSync(`${base}/widget/submit-base.json`);
+  const submitBlock = hasSubmit
+    ? `
+import { buildSubmitLayer } from "../../../src/widget/submit-validation-engine.ts";
+
+const submitBase = ${readFileSync(`${base}/widget/submit-base.json`, "utf8").trim()};
+
+const submitVariants = ${readFileSync(`${base}/widget/submit-variants.json`, "utf8").trim()};
+
+const fingerprintMatrix = ${readFileSync(`${base}/widget/fingerprint-matrix.json`, "utf8").trim()} as Record<string, string>;
+
+const additionalFieldPolicies = ${readFileSync(`${base}/widget/additional-field-policies.json`, "utf8").trim()};
+
+export const submitLayer = buildSubmitLayer({
+  rules, domain: domain as any, messages,
+  base: submitBase as any, variantsCfg: submitVariants as any,
+  fingerprintMatrix, additionalFieldPolicies,
+});
+`
+    : "";
+
   const widgetSrc = `// AUTO-GEGENEREERD door de fabriek — NIET met de hand aanpassen (regeneratie overschrijft dit).
-// Bron: ${base}/widget/{validation,domain,messages}.json · compiler v${COMPILER_VERSION} · regels-hash ${widgetHash}
+// Bron: ${base}/widget/{validation,domain,messages${hasSubmit ? ",submit-base,submit-variants,fingerprint-matrix,additional-field-policies" : ""}}.json · compiler v${COMPILER_VERSION} · regels-hash ${widgetHash}
 import { buildWidgetValidators } from "../../../src/widget/validation-engine.ts";
 import type { WidgetValidationRules } from "../../../src/widget/validation-engine.ts";
 
@@ -99,7 +121,7 @@ export const domain = ${domainJson};
 const messages = ${messagesJson};
 
 export const widgetLayer = buildWidgetValidators({ rules, domain: domain as any, messages });
-`;
+${submitBlock}`;
   mkdirSync(`generated/${portal}/widget`, { recursive: true });
   writeFileSync(`generated/${portal}/widget/index.ts`, widgetSrc);
   console.log(`fabriek: ${portal}/widget-laag -> generated/${portal}/widget/index.ts · regels-hash ${widgetHash}`);
