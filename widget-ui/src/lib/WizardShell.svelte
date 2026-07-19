@@ -20,6 +20,8 @@
     import ShipStepBlock from "./components/ShipStepBlock.svelte";
     import { fieldValidity } from "./state/formValidation";
     import { autoFetchRates } from "./api/rateFetcher";
+    import { submitShipmentByType } from "./api/submitShipment";
+    import { toast } from "./components/toast/toast";
     import ToastDisplay from "./components/toast/ToastDisplay.svelte";
     import { onMount } from "svelte";
 
@@ -43,6 +45,7 @@
 
     // Tenant-default (v1 hardcodeerde "NL"-origin; hier uit tenant-config).
     export const shipment = writable<ShipmentTemplate>({
+        source: "manual",
         shipperAddress: {
             ...emptyAddress(),
             country: tenant.defaults?.originCountry ?? "",
@@ -116,6 +119,31 @@
         showAllErrors.set(false);
         stepIdx.update((i) => Math.max(0, i - 1));
     }
+
+    // Verzenden: de volledige boek-keten via de proxy (choose deed de stap al bij
+    // rate-selectie; dit is chooseOption+submit serverside, capability-guarded).
+    let booking = false;
+    async function verzend() {
+        if (booking) return;
+        booking = true;
+        try {
+            const result = await submitShipmentByType(shipment as any, {
+                extCustomerId: userId,
+                sessionkey: "",
+                fingerprintMatrix: provider.submit?.fingerprintMatrix ?? {},
+                onSuccess: () => {},
+                onHide: () => {},
+            });
+            toast.success(
+                `Zending aangemaakt${(result as any)?.zendingnummer ? ` — nr. ${(result as any).zendingnummer}` : ""}.`,
+            );
+            done = true;
+        } catch (e) {
+            toast.error((e as Error).message);
+        } finally {
+            booking = false;
+        }
+    }
 </script>
 
 <div class="shell">
@@ -161,8 +189,14 @@
                 on:click={previous}
                 disabled={$stepIdx === 0}>{m.shipmentWizard.previousButton}</button
             >
-            <button type="button" class="btn primary" on:click={next}
-                >{m.shipmentWizard.continueButton}</button
+            <button
+                type="button"
+                class="btn primary"
+                disabled={booking}
+                on:click={currentStep?.id === "ship" ? verzend : next}
+                >{currentStep?.id === "ship"
+                    ? m.shipmentWizard.shipButton
+                    : m.shipmentWizard.continueButton}</button
             >
         </div>
     {/if}

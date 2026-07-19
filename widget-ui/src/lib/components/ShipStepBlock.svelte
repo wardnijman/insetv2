@@ -1,13 +1,14 @@
 <script lang="ts">
   // Geport uit v1 src/lib/components/ShipStepBlock.svelte. Wijzigingen (widget-extractie):
-  // - PROXY-FIRST: geen authFetch/portaal-calls. chooseOption (v1: dynamische import van
-  //   ../api/chooseOption, browser→TFF; patchte sessionKey/accessPoints/paperlessAvailable
-  //   op het shipment) bestaat nog niet achter de proxy → selectRate rondt de keuze
-  //   direct af met een "proxy:"-placeholder-sessionKey zodat de bestaande
-  //   "chooseOption heeft plaatsgevonden"-gates (sessionKeyReadyValidator) passeren.
-  //   paperlessKnown filtert die placeholder expliciet uit (paperless blijft onbekend →
-  //   geen melding); access points blijven leeg (AccessPointSelector's bestaande
-  //   "geen afhaalpunten"-pad). Zie TODO(proxy-chooseOption).
+  // - PROXY-FIRST: geen authFetch/portaal-calls. chooseOption loopt via de proxy
+  //   (api/chooseOption → POST /api/choose; v1 deed browser→TFF en patchte ook
+  //   accessPoints/paperlessAvailable). Verrijkte rates (met reusableData) volgen dat
+  //   v1-gedragspad met een echte server-sessionKey; kale rates (mock/dev) ronden af
+  //   met een "proxy:"-placeholder zodat de "chooseOption heeft plaatsgevonden"-gates
+  //   (sessionKeyReadyValidator) passeren. paperlessKnown filtert die placeholder uit
+  //   (paperless blijft onbekend → geen melding); access points patcht de route (nog)
+  //   niet (AccessPointSelector's bestaande "geen afhaalpunten"-pad).
+  //   Zie TODO(proxy-chooseOption-kale-rates).
   // - Generated-imports omgelegd naar de provider-laag: steps/widgetFieldsMatrix.json →
   //   provider.submit.widgetFieldsMatrix; steps/fingerprintMatrix.json →
   //   provider.submit.fingerprintMatrix; steps/additionalFieldPolicies.json →
@@ -29,8 +30,8 @@
   // - shipmentOptions wordt bij init geseed als de host 'm niet meegaf (v1's
   //   ShipWizardModal deed dat altijd; de v2-shell nog niet) — nodig voor de hidden
   //   ValidatedInputs en persistentFieldValidators (t.shipmentOptions.chosenRate).
-  // - extractSessionKeyFromAny (alleen voor het echte chooseOption-resultaat) vervalt
-  //   tot TODO(proxy-chooseOption) het terugbrengt.
+  // - extractSessionKeyFromAny vervalt: de proxy-route retourneert { sessionKey }
+  //   direct (v1 moest 'm uit resultaat/store peuteren).
   // - m-keys: alle shipmentWizard.shipStep-keys bestaan in de v2-catalogus;
   //   fieldDefinitions-keys met v1-fallbacks (invoicePresentQuestion e.d.) ontbreken
   //   in de catalogus en dragen op v1's fallback-strings.
@@ -185,8 +186,9 @@
   // actually run for this rate — i.e. a real sessionKey is in and we're not mid-call, and not
   // on the queue/skipChooseOption path (which uses a "queue:" placeholder key and resolves
   // paperless server-side at submit). Until then it stays unknown → we show nothing.
-  // TODO(proxy-chooseOption): de "proxy:"-placeholder is óók geen echte chooseOption →
-  // paperless blijft onbekend, dus die filteren we hier net zo uit als "queue:".
+  // De "proxy:"-placeholder (kale-rates-fallback in selectRate, zie
+  // TODO(proxy-chooseOption-kale-rates)) is geen echte chooseOption → paperless
+  // blijft onbekend, dus die filteren we hier net zo uit als "queue:".
   $: paperlessKnown =
     !chooseOptionLoading &&
     !!currentSessionKey &&
@@ -463,30 +465,48 @@
     const seq = ++chooseOptionSeq;
 
     try {
-      // TODO(proxy-chooseOption): v1 deed hier `const { chooseOptionAndPatchShipment } =
-      // await import("../api/chooseOption")` (browser→TFF) en haalde daarna de echte
-      // sessionKey uit resultaat/store (extractSessionKeyFromAny). Achter de proxy
-      // bestaat dat endpoint nog niet — we ronden de keuze direct af met een
-      // placeholder-sessionKey zodat sessionKeyReadyValidator (submit-gate) passeert.
-      // Gevolgen tot de echte bedrading er is: accessPoints blijven leeg
-      // (AccessPointSelector toont "geen afhaalpunten") en paperlessAvailable blijft
-      // undefined (paperlessKnown filtert "proxy:" uit → geen paperless-melding).
-      if (seq !== chooseOptionSeq) return;
+      let sessionKey: string;
 
-      const sessionKey =
-        "proxy:" + (rate?.reusableData?.choose_servicecode ?? rate?.service ?? "rate");
+      if (rate?.reusableData) {
+        // v1-gedragspad: echte chooseOption, nu via de proxy (POST /api/choose;
+        // v1 deed dit browser→TFF via `import("../api/chooseOption")`). De server
+        // draait het portaalpad op zijn eigen sessie en retourneert de sessionKey.
+        // Fouten vallen in het bestaande catch-pad (__chooseOptionError + lege
+        // sessionKey → sessionKeyReadyValidator blokkeert submit).
+        const { chooseOption } = await import("../api/chooseOption");
+        const result = await chooseOption(rate);
+        sessionKey = String(result?.sessionKey ?? "").trim();
+      } else {
+        // TODO(proxy-chooseOption-kale-rates): de /api/choose-route bestaat nu, maar
+        // kale rates (zonder reusableData, mock/dev-proxy) dragen niet de portaal-
+        // postData die de server nodig heeft — voor die fallback ronden we de keuze
+        // af met een "proxy:"-placeholder zodat de submit-gate passeert. Gevolgen:
+        // accessPoints blijven leeg (AccessPointSelector toont "geen afhaalpunten")
+        // en paperless blijft onbekend (paperlessKnown filtert "proxy:" uit).
+        sessionKey = "proxy:" + (rate?.service ?? "rate");
+      }
+
+      if (seq !== chooseOptionSeq) return;
 
       shipment.update((s) => {
         if (!s.shipmentOptions) s.shipmentOptions = {} as any;
 
         (s.shipmentOptions as any).__chooseOptionLoading = false;
-        (s.shipmentOptions as any).sessionKey = sessionKey;
-        (s.shipmentOptions as any).__chooseOptionError = "";
+
+        if (sessionKey) {
+          (s.shipmentOptions as any).sessionKey = sessionKey;
+          (s.shipmentOptions as any).__chooseOptionError = "";
+        } else {
+          (s.shipmentOptions as any).sessionKey = "";
+          (s.shipmentOptions as any).__chooseOptionError =
+            "No sessionKey found after chooseOption";
+        }
 
         return s;
       });
 
-      console.log("[ShipStepBlock] chooseOption done (proxy-interim)", {
+      console.log("[ShipStepBlock] chooseOption done", {
+        viaProxyRoute: !!rate?.reusableData,
         finalSessionKey: sessionKey,
       });
     } catch (err: any) {

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "fields": {
+    "choose_servicecode": {
+      "source": "reusableData.choose_servicecode",
+      "transform": "1-to-1"
+    },
+    "choose_carrier": {
+      "source": "reusableData.choose_carrier",
+      "transform": "1-to-1"
+    },
+    "choose_service": {
+      "source": "reusableData.choose_service",
+      "transform": "space_to_plus"
+    },
+    "choose_margin": {
+      "source": "reusableData.choose_margin",
+      "transform": "1-to-1"
+    },
+    "choose_price": {
+      "source": "reusableData.choose_price",
+      "transform": "1-to-1"
+    },
+    "choose_carrier_id": {
+      "source": "reusableData.choose_carrier_id",
+      "transform": "1-to-1"
+    },
+    "srk": {
+      "source": "reusableData.srk",
+      "transform": "1-to-1"
+    },
+    "choose_pickupdate": {
+      "source": "reusableData.choose_pickupdate",
+      "transform": "1-to-1"
+    },
+    "choose_pickuptime": {
+      "source": "reusableData.choose_pickuptime",
+      "transform": "1-to-1"
+    },
+    "choose_arrivaldate": {
+      "source": "reusableData.choose_arrivaldate",
+      "transform": "1-to-1"
+    },
+    "choose_arrivaltime": {
+      "source": "reusableData.choose_arrivaltime",
+      "transform": "1-to-1"
+    },
+    "choose_gogreen": {
+      "source": "reusableData.choose_gogreen",
+      "transform": "1-to-1"
+    },
+    "choose_carbonneutral": {
+      "source": "reusableData.choose_carbonneutral",
+      "transform": "1-to-1"
+    }
+  }
+}

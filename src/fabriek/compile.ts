@@ -125,4 +125,69 @@ ${submitBlock}`;
   mkdirSync(`generated/${portal}/widget`, { recursive: true });
   writeFileSync(`generated/${portal}/widget/index.ts`, widgetSrc);
   console.log(`fabriek: ${portal}/widget-laag -> generated/${portal}/widget/index.ts · regels-hash ${widgetHash}`);
+
+  // ---- payload-builders (boek-keten): choose + submit uit dezelfde bronconfig -----
+  if (hasSubmit && existsSync(`${base}/widget/choose-option.json`)) {
+    const submitBaseCfg = JSON.parse(readFileSync(`${base}/widget/submit-base.json`, "utf8"));
+    const variantsCfgJson = JSON.parse(readFileSync(`${base}/widget/submit-variants.json`, "utf8"));
+    const chooseCfg = JSON.parse(readFileSync(`${base}/widget/choose-option.json`, "utf8"));
+
+    const baseFields: Record<string, { source: string; transform: string }> = {};
+    for (const [name, d] of Object.entries(submitBaseCfg.fields as Record<string, any>)) {
+      if (d.source && d.transform) baseFields[name] = { source: d.source, transform: d.transform };
+    }
+    const variantFields: Record<string, string[]> = {};
+    for (const [h, v] of Object.entries(variantsCfgJson.variants as Record<string, any>)) variantFields[h] = v.fields;
+
+    const payloadSrc = `// AUTO-GEGENEREERD door de fabriek — NIET met de hand aanpassen (regeneratie overschrijft dit).
+// Payload-builders voor de boek-keten (choose + submit). Bron: ${base}/widget/
+// {submit-base,submit-variants,choose-option}.json + rules/widget-transforms.ts.
+// Semantiek bewaakt door de payload-oracle (verify-widget-payloads).
+import { widgetTransforms as reg } from "../../../${base}/rules/widget-transforms.ts";
+
+const BASE_FIELDS: Record<string, { source: string; transform: string }> = ${JSON.stringify(baseFields)};
+
+const VARIANT_FIELDS: Record<string, string[]> = ${JSON.stringify(variantFields)};
+
+const CHOOSE_FIELDS: Record<string, { source: string; transform: string }> = ${JSON.stringify(chooseCfg.fields)};
+
+function getPath(obj: any, path: string): any {
+  return path.replace(/\\[(\\d+)\\]/g, ".$1").split(".").reduce((a, p) => a?.[p], obj);
+}
+
+function apply(chain: string, value: any): unknown {
+  let v = value;
+  for (const name of chain.split("|").map((s) => s.trim())) {
+    const fn = reg[name];
+    if (!fn) throw new Error(\`onbekende widget-transform: \${name}\`);
+    v = fn(v);
+  }
+  return v;
+}
+
+/** chooseOption-payload: pure doorvertaling van rate.reusableData (13 velden). */
+export function buildChoosePayload(input: { reusableData: Record<string, unknown> }): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [field, d] of Object.entries(CHOOSE_FIELDS)) out[field] = apply(d.transform, getPath(input, d.source));
+  return out;
+}
+
+/** submit-payload voor één formulier-variant: veldstel van de variant × base-descriptoren. */
+export function buildSubmitPayload(formId: string, input: any): Record<string, unknown> {
+  const fields = VARIANT_FIELDS[formId];
+  if (!fields) throw new Error(\`onbekend submit-formulier: \${formId}\`);
+  const out: Record<string, unknown> = {};
+  for (const name of fields) {
+    const d = BASE_FIELDS[name];
+    if (!d) continue; // veld zonder mapping — v1's step sloeg het ook over
+    out[name] = apply(d.transform, getPath(input, d.source));
+  }
+  return out;
+}
+
+export const SUBMIT_FORM_IDS: string[] = Object.keys(VARIANT_FIELDS);
+`;
+    writeFileSync(`generated/${portal}/widget/payload.ts`, payloadSrc);
+    console.log(`fabriek: ${portal}/payload-builders -> generated/${portal}/widget/payload.ts (${Object.keys(variantFields).length} formulieren)`);
+  }
 }

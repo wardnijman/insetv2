@@ -23,12 +23,44 @@ function mockLogin(): Session {
   };
 }
 
-function mockSubmit(session: Session, _flow: string, payload: Record<string, unknown>): PortalResponse {
+let mockShipmentSeq = 80000000;
+
+function mockSubmit(session: Session, flow: string, payload: Record<string, unknown>): PortalResponse {
   if (!validSessions.has(session.id)) return { status: 302, loggedOut: true, body: "redirect -> /login" };
+
+  if (flow === "chooseOption") {
+    // Echte TFF geeft na chooseOption een submit-sessie; de srk komt uit de rate.
+    return { status: 200, loggedOut: false, body: { ok: true, sessionKey: `srk-${payload["srk"] ?? "1"}` } };
+  }
+  if (flow.startsWith("submitShipment")) {
+    mockShipmentSeq += 1;
+    return {
+      status: 200,
+      loggedOut: false,
+      body: { zendingnummer: String(mockShipmentSeq), confirmationHtml: `<div>Zending ${mockShipmentSeq} aangemaakt</div>` },
+    };
+  }
+
+  // getRates: VERRIJKTE rates zoals het echte portaal (reusableData is load-bearing
+  // voor chooseOption/submit én automation-rate-selectie). DPD Classic is de
+  // capability-guard-veilige boekbare optie; DHL Express test juist de blokkade.
   const grams = Number(payload["gewicht"] ?? 0);
+  const mk = (carrier: string, service: string, servicecode: string, price: number, srk: string, transit: string) => ({
+    carrier, service, price,
+    transitTime: transit,
+    serviceDescription: `${carrier} ${service}`,
+    reusableData: {
+      choose_carrier: carrier, choose_service: service, choose_servicecode: servicecode,
+      choose_price: String(price), choose_margin: "1.24", choose_carrier_id: "1", srk,
+      choose_pickupdate: "2026-07-21", choose_pickuptime: "1600",
+      choose_arrivaldate: "2026-07-23", choose_arrivaltime: "1700",
+      choose_gogreen: "0", choose_carbonneutral: "0",
+    },
+  });
   const rates = [
-    { carrier: "UPS", service: "Standard", price: Number((5 + (grams / 1000) * 2).toFixed(2)) },
-    { carrier: "DHL", service: "Express", price: Number((9 + (grams / 1000) * 3).toFixed(2)) },
+    mk("DPD", "Classic", "D-CL", Number((4 + (grams / 1000) * 2).toFixed(2)), "2", "1"),
+    mk("UPS", "Standard", "U", Number((5 + (grams / 1000) * 2).toFixed(2)), "3", "1"),
+    mk("DHL", "Express", "EX", Number((9 + (grams / 1000) * 3).toFixed(2)), "4", "1"),
   ];
   return { status: 200, loggedOut: false, body: { rates } };
 }

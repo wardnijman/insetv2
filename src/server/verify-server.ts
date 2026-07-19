@@ -77,10 +77,51 @@ await fetch(`${base}/api/product-profiles/learn`, {
 const profiles = (await (await fetch(`${base}/api/product-profiles/get?userId=u1`)).json()) as any;
 check("product-profielen: per-veld merge (deeldata wist hsCode niet)", profiles["SKU-9"]?.hsCode === "490199" && profiles["SKU-9"]?.value === 30);
 
-// 6) boeken-interim (501-contract) + service-points-interim (lege lijst)
-const book = await fetch(`${base}/api/book`, { method: "POST", body: "{}" });
-const bookBody = (await book.json()) as any;
-check("boeken: 501 booking_not_wired (interim-contract)", book.status === 501 && bookBody.error === "booking_not_wired");
+// 6) DE BOEK-KETEN end-to-end tegen het mock-portaal: verrijkte rates -> choose -> book.
+check("rates: verrijkt met reusableData (load-bearing voor boeken)",
+  typeof (rates.rates?.[0] as any)?.reusableData?.choose_carrier === "string");
+const dpd = (rates.rates as any[]).find((r) => r.carrier === "DPD" && r.service === "Classic");
+check("rates: mock biedt guard-veilige DPD Classic", !!dpd);
+
+const chosen = (await (
+  await fetch(`${base}/api/choose`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chosenRate: dpd }),
+  })
+).json()) as any;
+check("choose: sessionKey uit het portaal", typeof chosen.sessionKey === "string" && chosen.sessionKey.startsWith("srk-"));
+
+const bookShipment = {
+  source: "manual",
+  ...shipment,
+  invoice: {},
+  customsDocuments: [],
+  products: [],
+  shipmentOptions: {
+    insuranceValue: 0, truckShipmentInfo: {}, signatureRequired: "none",
+    shipmentOriginCountry: "", totalShipmentValue: 0, incotermsGroupD: "",
+    description: "Samples", invoiceRef: "", factuurAanwezig: "nee",
+    chosenRate: { ...dpd },
+  },
+};
+const booked = await fetch(`${base}/api/book`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ shipment: bookShipment, fingerprint: "-1100307470", chosenRate: dpd }),
+});
+const bookedBody = (await booked.json()) as any;
+check("book: 200 + zendingnummer uit het (mock-)portaal", booked.status === 200 && /^\d+$/.test(String(bookedBody.zendingnummer ?? "")));
+
+// capability-guard: express-service moet GEBLOKKEERD worden (Wards boek-beleid, R1.3)
+const dhl = (rates.rates as any[]).find((r) => r.carrier === "DHL");
+const blocked = await fetch(`${base}/api/book`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ shipment: bookShipment, fingerprint: "-1100307470", chosenRate: dhl }),
+});
+check("book: capability-guard blokkeert DHL Express (403)", blocked.status === 403);
+
 const sp = (await (await fetch(`${base}/api/service-points?postalCode=1011AB`)).json()) as unknown[];
 check("service-points: lege lijst (interim)", Array.isArray(sp) && sp.length === 0);
 

@@ -13,7 +13,9 @@ import { readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { SessionPool } from "../runtime/pool.ts";
 import { loadAdapter, runFlow } from "../runtime/execute.ts";
-import { tenantDb } from "../db/tenant-db.ts";
+import { assertBookable } from "../runtime/capabilities.ts";
+import { startRun, record, finishRun } from "../observability/trace.ts";
+import { tenantDb, recordShipment } from "../db/tenant-db.ts";
 import { US_STATES, CA_PROVINCES } from "./regions.ts";
 
 interface TenantConfig {
@@ -40,6 +42,33 @@ async function getPool(portal: string): Promise<SessionPool> {
     pools.set(portal, p);
   }
   return p;
+}
+
+// Payload-builders per portaal (fabriek-emit, oracle-bewezen) — lazy zoals loadTransform.
+const payloadMods = new Map<string, { buildChoosePayload: (i: any) => Record<string, unknown>; buildSubmitPayload: (formId: string, i: any) => Record<string, unknown> }>();
+async function getPayloadBuilders(portal: string) {
+  let m = payloadMods.get(portal);
+  if (!m) {
+    m = await import(`../../generated/${portal}/widget/payload.ts`);
+    payloadMods.set(portal, m!);
+  }
+  return m!;
+}
+
+/** Als runFlow, maar met een VOORGEBOUWDE payload (choose/submit uit de payload-builders). */
+async function runPrebuilt(pool: SessionPool, tenant: string, portal: string, flow: string, payload: Record<string, unknown>): Promise<any> {
+  const ctx = startRun(tenant, portal, flow);
+  record(ctx, "payload", payload);
+  try {
+    const resp = await pool.submit(flow, payload);
+    record(ctx, "response", { status: resp.status });
+    if (resp.status !== 200) throw new Error(`flow ${flow} faalde: status ${resp.status}`);
+    finishRun(ctx, { status: "ok" });
+    return resp.body;
+  } catch (e) {
+    finishRun(ctx, { status: "error", error: (e as Error).message });
+    throw e;
+  }
 }
 
 // --- prefs-opslag (adresboek, pakket-templates) in de per-tenant SQLite -----------
@@ -175,11 +204,49 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return json(res, 503, { ok: false, error: "ai_not_configured" });
     }
 
+    if (route === "/api/choose" && req.method === "POST") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const portal = tenant.providers[0];
+      const { buildChoosePayload } = await getPayloadBuilders(portal);
+      const pool = await getPool(portal);
+      const result = await runPrebuilt(pool, tenantId, portal, "chooseOption",
+        buildChoosePayload({ reusableData: body.chosenRate?.reusableData ?? {} }));
+      return json(res, 200, result);
+    }
+
     if (route === "/api/book" && req.method === "POST") {
-      // Interim: boeken (chooseOption+submit) vergt de fabriek-emit van de
-      // submit-TRANSFORMS (volgende fabriek-slice) + capability-guard-bedrading.
-      // 501 met duidelijk contract; de widget toont dit netjes.
-      return json(res, 501, { error: "booking_not_wired", message: "Boeken is nog niet bedraad in deze omgeving." });
+      // De volledige boek-keten: capability-guard -> chooseOption -> submit -> registratie.
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const portal = tenant.providers[0];
+      const shipment = body.shipment ?? {};
+      const chosenRate = body.chosenRate ?? shipment?.shipmentOptions?.chosenRate ?? {};
+      const carrier = String(chosenRate?.reusableData?.choose_carrier ?? chosenRate?.carrier ?? "");
+      const service = String(chosenRate?.reusableData?.choose_service ?? chosenRate?.service ?? "");
+      const formId = String(body.fingerprint ?? "");
+      if (!formId) return json(res, 422, { error: "missing_fingerprint", message: "Geen formulier-fingerprint voor deze lane/rate." });
+
+      // Wards boek-beleid in CODE — faalt gesloten (nooit Mainfreight/express, R1.3).
+      try {
+        assertBookable(portal, { carrier, service });
+      } catch (e) {
+        return json(res, 403, { error: "blocked_by_policy", message: (e as Error).message });
+      }
+
+      const { buildChoosePayload, buildSubmitPayload } = await getPayloadBuilders(portal);
+      const pool = await getPool(portal);
+      await runPrebuilt(pool, tenantId, portal, "chooseOption",
+        buildChoosePayload({ reusableData: chosenRate?.reusableData ?? {} }));
+      const input = { ...shipment, source: shipment.source ?? "manual", customsDocuments: shipment.customsDocuments ?? [] };
+      const result = await runPrebuilt(pool, tenantId, portal, `submitShipment${formId}`, buildSubmitPayload(formId, input));
+
+      recordShipment(tenantId, {
+        portal, carrier, service,
+        shipmentRef: String(result?.zendingnummer ?? result?.shipmentRef ?? ""),
+        status: "ok",
+      });
+      // TODO(mail-finalisatie): tracking-/bevestigingsmails verhuisden van client naar
+      // hier — bedraden zodra de mail-infra er is.
+      return json(res, 200, { ok: true, carrier, service, ...result });
     }
 
     if (route === "/api/service-points" && req.method === "GET") {

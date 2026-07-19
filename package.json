@@ -20,7 +20,7 @@
     "verify-messages": "node --experimental-strip-types src/widget/verify-messages.ts",
     "verify-engine": "node --experimental-strip-types src/widget/verify-engine.ts",
     "demo": "node --experimental-strip-types src/runtime/run-demo.ts",
-    "test": "node --experimental-strip-types src/fabriek/compile.ts tff && node --experimental-strip-types src/fabriek/compile.ts transheroes && node --experimental-strip-types src/contract/contract-test.ts && node --experimental-strip-types src/fabriek/verify-generalized.ts && node --experimental-strip-types src/runtime/verify-capabilities.ts && node --experimental-strip-types src/vault/verify-vault.ts && node --experimental-strip-types src/observability/verify-trace.ts && node --experimental-strip-types --experimental-sqlite src/db/verify-db.ts && node --experimental-strip-types --experimental-sqlite src/server/verify-server.ts && node --experimental-strip-types src/widget/verify-widget-validators.ts && node --experimental-strip-types src/widget/verify-widget-submit.ts && node --experimental-strip-types src/widget/verify-widget.ts && node --experimental-strip-types src/widget/verify-host.ts && node --experimental-strip-types src/widget/verify-messages.ts && node --experimental-strip-types src/widget/verify-engine.ts && node --experimental-strip-types src/runtime/run-demo.ts && node --experimental-strip-types src/probe/drift-probe.ts",
+    "test": "node --experimental-strip-types src/fabriek/compile.ts tff && node --experimental-strip-types src/fabriek/compile.ts transheroes && node --experimental-strip-types src/contract/contract-test.ts && node --experimental-strip-types src/fabriek/verify-generalized.ts && node --experimental-strip-types src/runtime/verify-capabilities.ts && node --experimental-strip-types src/vault/verify-vault.ts && node --experimental-strip-types src/observability/verify-trace.ts && node --experimental-strip-types --experimental-sqlite src/db/verify-db.ts && node --experimental-strip-types --experimental-sqlite src/server/verify-server.ts && node --experimental-strip-types src/widget/verify-widget-validators.ts && node --experimental-strip-types src/widget/verify-widget-submit.ts && node --experimental-strip-types src/widget/verify-widget-payloads.ts && node --experimental-strip-types src/widget/verify-widget.ts && node --experimental-strip-types src/widget/verify-host.ts && node --experimental-strip-types src/widget/verify-messages.ts && node --experimental-strip-types src/widget/verify-engine.ts && node --experimental-strip-types src/runtime/run-demo.ts && node --experimental-strip-types src/probe/drift-probe.ts",
     "server": "node --experimental-strip-types --experimental-sqlite src/server/server.ts",
     "verify-server": "node --experimental-strip-types --experimental-sqlite src/server/verify-server.ts",
     "oracle-widget": "node --experimental-strip-types src/widget/oracle-widget-validators.ts",
@@ -28,6 +28,8 @@
     "seed-submit": "node --experimental-strip-types src/widget/seed-submit-config.ts",
     "oracle-submit": "node --experimental-strip-types src/widget/oracle-widget-submit.ts",
     "verify-widget-submit": "node --experimental-strip-types src/widget/verify-widget-submit.ts",
+    "oracle-payloads": "node --experimental-strip-types src/widget/oracle-widget-payloads.ts",
+    "verify-widget-payloads": "node --experimental-strip-types src/widget/verify-widget-payloads.ts",
     "ingest-submit-form": "node --experimental-strip-types src/recorder/ingest-submit-form.ts"
   }
 }
